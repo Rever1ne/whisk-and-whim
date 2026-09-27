@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Whisk & Whim · Admin Den</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<style>
+:root{--bg:#c9dceb;--panel:#e1ecf5;--panel2:#c7d9e8;--ink:#24435e;--muted:#587792;--peach:#f3b29f;--line:rgba(54,91,126,.24)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(circle at 8% 12%,rgba(155,193,224,.72),transparent 28%),radial-gradient(circle at 88% 8%,rgba(191,214,233,.80),transparent 31%),linear-gradient(145deg,#dceaf4,#bcd2e3);min-height:100vh}
+.wrap{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:30px 0 52px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}.brand b{display:block;font-size:22px}.brand span{font-size:12px;color:var(--muted)}button,input{font:inherit}.btn{border:1px solid rgba(221,147,123,.28);background:linear-gradient(145deg,#fff4ee,#ffd9cb);color:#70453b;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer}.ghost{background:rgba(218,232,242,.78);border-color:var(--line);color:var(--ink)}.danger{border-color:rgba(173,86,86,.28);background:rgba(255,237,237,.9);color:#7a3f3f}.danger:hover{background:#ffe3e3}.card{background:rgba(218,233,244,.96);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 50px rgba(62,100,136,.14);padding:20px}.login{width:min(470px,100%);margin:11vh auto 0}.login h1{margin:0 0 8px;font-size:28px}.login p{color:var(--muted);line-height:1.55;font-size:13px}.field{display:grid;gap:7px;margin:18px 0 12px}.field label{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.field input,.search{width:100%;border:1px solid var(--line);background:#e8f1f7;color:var(--ink);border-radius:13px;padding:12px 13px;outline:none}.status{font-size:12px;color:var(--muted);margin-top:12px;min-height:18px}.dash{display:none}.dash.show{display:block}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}.toolbar h1{margin:0;font-size:25px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}.stat{padding:15px;border-radius:16px;background:rgba(187,211,230,.72);border:1px solid rgba(70,109,146,.12)}.stat b{display:block;font-size:21px}.stat span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}.grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:15px}.list{display:grid;gap:8px;max-height:650px;overflow:auto}.konling{border:1px solid var(--line);background:rgba(187,211,230,.62);border-radius:14px;padding:11px 12px;cursor:pointer;text-align:left;color:var(--ink)}.konling.active{outline:2px solid rgba(246,184,164,.7)}.konling b,.konling span{display:block}.konling span{font-size:10px;color:var(--muted);margin-top:3px}.empty{padding:34px 12px;text-align:center;color:var(--muted);font-size:12px}.profile-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:13px}.profile-head h2{margin:0}.profile-head small{color:var(--muted)}.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:15px}.mini div{background:rgba(187,211,230,.62);border:1px solid rgba(70,109,146,.11);border-radius:12px;padding:10px}.mini b,.mini span{display:block}.mini span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}.pulls{display:grid;gap:7px}.pull{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:9px;align-items:center;padding:10px;border-radius:12px;background:rgba(183,208,228,.58);font-size:11px}.pull strong{font-size:12px}.pull small{color:var(--muted)}.pill{font-size:9px;font-weight:900;border-radius:999px;padding:5px 7px;background:#ffe5da;color:#70453b;white-space:nowrap}@media(max-width:850px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.mini{grid-template-columns:1fr 1fr}}@media(max-width:520px){.stats{grid-template-columns:1fr 1fr}.toolbar{align-items:flex-start;flex-direction:column}.pull{grid-template-columns:58px 1fr}.pull .pill{grid-column:1/-1;width:max-content}}
+
+/* Pink admin actions */
+.btn{
+  border-color:rgba(158,75,108,.28);
+  background:linear-gradient(145deg,#ffe7f0,#f3b3ca);
+  color:#55243a;
+  box-shadow:0 6px 16px rgba(139,72,101,.11);
+  text-shadow:none;
+}
+.btn:hover{
+  border-color:rgba(151,61,99,.43);
+  background:linear-gradient(145deg,#ffedf4,#efa5c0);
+  color:#452031;
+}
+.ghost{
+  background:linear-gradient(145deg,#f8dce7,#eeb4ca);
+  border-color:rgba(142,73,102,.26);
+  color:#52263a;
+}
+.danger{
+  border-color:rgba(159,62,91,.35);
+  background:linear-gradient(145deg,#ffdce7,#ed9fb8);
+  color:#5c2237;
+}
+.danger:hover{
+  background:linear-gradient(145deg,#ffd3e1,#e989aa);
+  color:#49182d;
+}
+.konling.active{
+  outline:2px solid rgba(222,119,157,.88);
+  background:rgba(210,190,215,.50);
+}
+.pill{
+  background:#f8c6d8;
+  color:#54243a;
+  border:1px solid rgba(152,75,106,.18);
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="loginView" class="card login">
+    <div class="brand"><b>Whisk & Whim</b><span>Private fox den</span></div>
+    <h1>Admin login</h1>
+    <p>This room is for Revie only. Enter the approved admin email, then use the one-time code sent to your inbox.</p>
+    <div class="field"><label for="email">Admin email</label><input id="email" type="email" autocomplete="email" placeholder="yuerinkyubi@gmail.com"></div>
+    <button class="btn" id="loginBtn">SEND LOGIN CODE</button>
+    <div class="field" id="otpField" style="display:none"><label for="otp">One-time code</label><input id="otp" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code"></div>
+    <button class="btn ghost" id="verifyBtn" style="display:none">VERIFY & ENTER</button>
+    <div class="status" id="loginStatus"></div>
+  </section>
+
+  <section id="dashView" class="dash">
+    <div class="top">
+      <div class="brand"><b>Whisk & Whim · Admin Den</b><span>Konling collection control room</span></div>
+      <button class="btn ghost" id="logoutBtn">Log out</button>
+    </div>
+    <div class="card">
+      <div class="toolbar"><div><h1>Konlings</h1><div class="status" id="adminStatus">Loading central records…</div></div><input class="search" id="search" placeholder="Search Konling…" style="max-width:280px"></div>
+      <div class="stats">
+        <div class="stat"><b id="sKonlings">0</b><span>Konlings</span></div>
+        <div class="stat"><b id="sPulls">0</b><span>Total pulls</span></div>
+        <div class="stat"><b id="sUnique">0</b><span>Unique shakes pulled</span></div>
+        <div class="stat"><b id="sSyrup">0</b><span>Syrup Drops</span></div>
+      </div>
+      <div class="grid">
+        <div><div id="konlingList" class="list"></div></div>
+        <div id="profile" class="empty">Pick a Konling to open their pull history.</div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(function(){
+  var cfg=window.WHISK_SUPABASE||null;
+  var loginView=document.getElementById("loginView"),dashView=document.getElementById("dashView");
+  var loginStatus=document.getElementById("loginStatus"),adminStatus=document.getElementById("adminStatus");
+  var allKonlings=[],allPulls=[],selected=null,client=null;
+  var syncChannel = ("BroadcastChannel" in window) ? new BroadcastChannel("whisk-whim-admin-sync") : null;
+
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]);});}
+  function showLogin(msg){loginView.style.display="block";dashView.classList.remove("show");if(msg)loginStatus.textContent=msg;}
+  function showDash(){loginView.style.display="none";dashView.classList.add("show");}
+
+  async function boot(){
+    if(!cfg||!cfg.url||!cfg.anonKey){showLogin("The private database connection has not been finished yet.");return;}
+    client=supabase.createClient(cfg.url,cfg.anonKey,{
+      auth:{
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:true,
+        storage:window.localStorage
+      }
+    });
+    var session=(await client.auth.getSession()).data.session;
+    if(!session){showLogin();return;}
+    var check=await client.from("admin_users").select("user_id").eq("user_id",session.user.id).maybeSingle();
+    if(check.error){
+      showLogin("Could not verify the admin session right now. Your login is still saved, so refresh and try again.");
+      return;
+    }
+    if(!check.data){
+      await client.auth.signOut();
+      showLogin("This account is not approved for the admin den.");
+      return;
+    }
+    showDash();
+    loadData();
+  }
+
+  document.getElementById("loginBtn").onclick=async function(){
+    if(!client){
+      if(!cfg||!cfg.url||!cfg.anonKey){loginStatus.textContent="The private database connection has not been finished yet.";return;}
+      client=supabase.createClient(cfg.url,cfg.anonKey,{
+      auth:{
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:true,
+        storage:window.localStorage
+      }
+    });
+    }
+    var email=document.getElementById("email").value.trim().toLowerCase();
+    if(!email){loginStatus.textContent="Enter your admin email first.";return;}
+    if(email!=="yuerinkyubi@gmail.com"){loginStatus.textContent="That email is not approved for the admin den.";return;}
+    loginStatus.textContent="Sending your one-time code…";
+    var res=await client.auth.signInWithOtp({email:email,options:{shouldCreateUser:true,emailRedirectTo:location.href}});
+    if(res.error){loginStatus.textContent=res.error.message;return;}
+    document.getElementById("otpField").style.display="grid";
+    document.getElementById("verifyBtn").style.display="inline-block";
+    loginStatus.textContent="Check your inbox, then enter the code here.";
+    document.getElementById("otp").focus();
+  };
+
+  document.getElementById("verifyBtn").onclick=async function(){
+    var email=document.getElementById("email").value.trim().toLowerCase();
+    var token=document.getElementById("otp").value.trim();
+    if(!token){loginStatus.textContent="Enter the one-time code from your email.";return;}
+    loginStatus.textContent="Opening the admin den…";
+    var res=await client.auth.verifyOtp({email:email,token:token,type:"email"});
+    if(res.error){loginStatus.textContent=res.error.message;return;}
+    location.reload();
+  };
+
+  document.getElementById("logoutBtn").onclick=async function(){if(client)await client.auth.signOut();location.reload();};
+  document.getElementById("search").oninput=renderList;
+
+  async function loadData(silent){
+    if(!client)return;
+    if(!silent)adminStatus.textContent="Loading central records…";
+    var kr=await client.from("konlings").select("*").order("created_at",{ascending:false});
+    var pr=await client.from("pulls").select("*").order("created_at",{ascending:false}).limit(5000);
+    if(kr.error||pr.error){adminStatus.textContent=(kr.error||pr.error).message;return;}
+    allKonlings=kr.data||[];allPulls=pr.data||[];
+
+    if(selected && !allKonlings.some(function(k){return k.id===selected;})){
+      selected=null;
+      var profileBox=document.getElementById("profile");
+      profileBox.className="empty";
+      profileBox.textContent="That Konling was deleted from the wheel. Their central pull history was deleted too.";
+    }
+
+    document.getElementById("sKonlings").textContent=allKonlings.length;
+    document.getElementById("sPulls").textContent=allPulls.length;
+    document.getElementById("sUnique").textContent=new Set(allPulls.map(function(p){return p.shake_name;})).size;
+    document.getElementById("sSyrup").textContent=allKonlings.reduce(function(n,k){return n+(k.syrup_drops||0);},0);
+    if(!silent)adminStatus.textContent="Central pull records are up to date.";
+    renderList();
+    if(selected)renderProfile();
+  }
+
+  function renderList(){
+    var q=document.getElementById("search").value.trim().toLowerCase();
+    var rows=allKonlings.filter(function(k){return !q||k.username.toLowerCase().includes(q)||(k.konling_id||"").toLowerCase().includes(q);});
+    var box=document.getElementById("konlingList");
+    if(!rows.length){box.innerHTML='<div class="empty">No Konlings found.</div>';return;}
+    box.innerHTML=rows.map(function(k){return '<button class="konling '+(selected===k.id?'active':'')+'" data-id="'+k.id+'"><b>'+esc(k.username)+'</b><span>'+esc(k.konling_id)+' · '+k.total_pulls+' pulls · pity '+k.pity+'/4</span></button>';}).join("");
+    box.querySelectorAll(".konling").forEach(function(btn){btn.onclick=function(){selected=btn.dataset.id;renderList();renderProfile();};});
+  }
+
+  function renderProfile(){
+    var k=allKonlings.find(function(x){return x.id===selected;});
+    if(!k)return;
+    var pulls=allPulls.filter(function(p){return p.konling_uuid===k.id;});
+    var unique=new Set(pulls.map(function(p){return p.shake_name;})).size;
+    var box=document.getElementById("profile");
+    box.className="";
+    box.innerHTML='<div class="profile-head"><div><h2>'+esc(k.username)+'</h2><small>'+esc(k.konling_id)+'</small></div><div style="display:grid;gap:8px;justify-items:end"><small>Joined '+new Date(k.created_at).toLocaleDateString()+'</small><button class="btn danger" id="clearHistoryBtn" '+(pulls.length?'':'disabled')+'>Clear pull history</button></div></div>'+
+      '<div class="mini"><div><b>'+k.total_pulls+'</b><span>Pulls</span></div><div><b>'+unique+' / 15</b><span>Collection</span></div><div><b>'+k.pity+' / 4</b><span>Pity</span></div><div><b>'+k.syrup_drops+'</b><span>Syrup</span></div></div>'+
+      '<div class="pulls">'+(pulls.length?pulls.map(function(p){return '<div class="pull"><b>'+"★".repeat(p.stars)+'</b><div><strong>'+esc(p.shake_name)+'</strong><br><small>'+esc(p.rarity)+' · '+new Date(p.created_at).toLocaleString()+'</small></div><span class="pill">'+(p.guaranteed?'GUARANTEED · ':'')+(p.duplicate?'DUPLICATE +'+p.syrup_earned:'NEW')+'</span></div>';}).join(""):'<div class="empty">No pulls yet.</div>')+'</div>';
+
+    var clearBtn=document.getElementById("clearHistoryBtn");
+    if(clearBtn) clearBtn.onclick=clearSelectedHistory;
+  }
+
+  async function clearSelectedHistory(){
+    var k=allKonlings.find(function(x){return x.id===selected;});
+    if(!k||!client)return;
+    var ok=confirm("Delete all pull history for "+k.username+"? This will also reset their collection, pity, pull count and Syrup Drops to 0. Their Konling ID will be kept.");
+    if(!ok)return;
+
+    var btn=document.getElementById("clearHistoryBtn");
+    if(btn){btn.disabled=true;btn.textContent="Clearing…";}
+    adminStatus.textContent="Clearing "+k.username+"'s pull history…";
+
+    var res=await client.rpc("clear_konling_history",{p_konling_uuid:k.id});
+    if(res.error){
+      adminStatus.textContent="Could not clear history: "+res.error.message;
+      if(btn){btn.disabled=false;btn.textContent="Clear pull history";}
+      return;
+    }
+
+    await loadData();
+    renderProfile();
+    adminStatus.textContent=k.username+"'s pull history was cleared. Their Konling ID was kept.";
+  }
+
+  if(syncChannel){
+    syncChannel.onmessage=function(e){
+      if(e.data && e.data.type==="konling-deleted"){
+        var removed=allKonlings.find(function(k){return k.konling_id===e.data.konlingId;});
+        if(removed && selected===removed.id)selected=null;
+        loadData();
+      }
+    };
+  }
+
+  window.addEventListener("storage",function(e){
+    if(e.key==="whiskWhimAdminSync" && dashView.classList.contains("show"))loadData();
+  });
+  window.addEventListener("focus",function(){
+    if(dashView.classList.contains("show"))loadData(true);
+  });
+  document.addEventListener("visibilitychange",function(){
+    if(!document.hidden && dashView.classList.contains("show"))loadData(true);
+  });
+  setInterval(function(){
+    if(dashView.classList.contains("show"))loadData(true);
+  },30000);
+
+  boot();
+})();
+</script>
+</body>
+</html>
