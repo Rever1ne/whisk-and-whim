@@ -198,12 +198,59 @@
     var unique=new Set(pulls.map(function(p){return p.shake_name;})).size;
     var box=document.getElementById("profile");
     box.className="";
-    box.innerHTML='<div class="profile-head"><div><h2>'+esc(k.username)+'</h2><small>'+esc(k.konling_id)+'</small></div><div style="display:grid;gap:8px;justify-items:end"><small>Joined '+new Date(k.created_at).toLocaleDateString()+'</small><button class="btn danger" id="clearHistoryBtn" '+(pulls.length?'':'disabled')+'>Clear pull history</button></div></div>'+
+    box.innerHTML='<div class="profile-head"><div><h2>'+esc(k.username)+'</h2><small>'+esc(k.konling_id)+'</small></div><div style="display:grid;gap:8px;justify-items:end"><small>Joined '+new Date(k.created_at).toLocaleDateString()+'</small><div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end"><button class="btn danger" id="clearHistoryBtn" '+(pulls.length?'':'disabled')+'>Clear pull history</button><button class="btn danger" id="deleteKonlingBtn">Delete Konling permanently</button></div></div></div>'+
       '<div class="mini"><div><b>'+k.total_pulls+'</b><span>Pulls</span></div><div><b>'+unique+' / 15</b><span>Collection</span></div><div><b>'+k.pity+' / 4</b><span>Pity</span></div><div><b>'+k.syrup_drops+'</b><span>Syrup</span></div></div>'+
       '<div class="pulls">'+(pulls.length?pulls.map(function(p){return '<div class="pull"><b>'+"★".repeat(p.stars)+'</b><div><strong>'+esc(p.shake_name)+'</strong><br><small>'+esc(p.rarity)+' · '+new Date(p.created_at).toLocaleString()+'</small></div><span class="pill">'+(p.guaranteed?'GUARANTEED · ':'')+(p.duplicate?'DUPLICATE +'+p.syrup_earned:'NEW')+'</span></div>';}).join(""):'<div class="empty">No pulls yet.</div>')+'</div>';
 
     var clearBtn=document.getElementById("clearHistoryBtn");
     if(clearBtn) clearBtn.onclick=clearSelectedHistory;
+    var deleteBtn=document.getElementById("deleteKonlingBtn");
+    if(deleteBtn) deleteBtn.onclick=deleteSelectedKonling;
+  }
+
+  async function deleteSelectedKonling(){
+    var k=allKonlings.find(function(x){return x.id===selected;});
+    if(!k||!client)return;
+
+    var ok=confirm(
+      "Permanently delete "+k.username+" ("+k.konling_id+")? This erases their Konling ID, profile, every pull, collection, pity and Syrup Drops. This cannot be undone."
+    );
+    if(!ok)return;
+
+    var btn=document.getElementById("deleteKonlingBtn");
+    if(btn){btn.disabled=true;btn.textContent="Deleting…";}
+    adminStatus.textContent="Permanently deleting "+k.username+" and all central records…";
+
+    var res=await client.rpc("delete_konling_profile",{
+      p_konling_id:k.konling_id,
+      p_username:k.username
+    });
+
+    if(res.error||res.data!==true){
+      adminStatus.textContent="Could not permanently delete this Konling: "+(res.error?res.error.message:"Unknown error");
+      if(btn){btn.disabled=false;btn.textContent="Delete Konling permanently";}
+      return;
+    }
+
+    var deletedId=k.konling_id;
+    selected=null;
+
+    if(syncChannel){
+      try{syncChannel.postMessage({type:"konling-deleted",konlingId:deletedId});}catch(e){}
+    }
+    try{
+      localStorage.setItem("whiskWhimAdminSync",JSON.stringify({
+        type:"konling-deleted",
+        konlingId:deletedId,
+        at:Date.now()
+      }));
+    }catch(e){}
+
+    await loadData(true);
+    var profileBox=document.getElementById("profile");
+    profileBox.className="empty";
+    profileBox.textContent="Konling "+deletedId+" was permanently deleted. Their profile and every pull record are gone.";
+    adminStatus.textContent=k.username+" ("+deletedId+") was permanently deleted.";
   }
 
   async function clearSelectedHistory(){
