@@ -1795,7 +1795,14 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
   var currentPullGuaranteed = false;
   var pendingCentralPull = null;
   var centralClient = (window.WHISK_SUPABASE && window.supabase)
-    ? window.supabase.createClient(window.WHISK_SUPABASE.url,window.WHISK_SUPABASE.anonKey)
+    ? window.supabase.createClient(window.WHISK_SUPABASE.url,window.WHISK_SUPABASE.anonKey,{
+        auth:{
+          persistSession:true,
+          autoRefreshToken:true,
+          detectSessionInUrl:true,
+          storage:window.localStorage
+        }
+      })
     : null;
 
   function loadCustomers(){
@@ -1841,8 +1848,33 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     return (profile.history || []).some(function(h){ return h.name === name; });
   }
 
-  function openCustomerEditor(mode){
+  async function hasAdminIdentityAccess(){
+    if(!centralClient) return false;
+    try{
+      var sessionRes = await centralClient.auth.getSession();
+      var session = sessionRes && sessionRes.data ? sessionRes.data.session : null;
+      if(!session) return false;
+      var check = await centralClient.from("admin_users")
+        .select("user_id")
+        .eq("user_id",session.user.id)
+        .maybeSingle();
+      return !check.error && !!check.data;
+    }catch(e){
+      return false;
+    }
+  }
+
+  async function requireAdminIdentityAccess(){
+    var allowed = await hasAdminIdentityAccess();
+    if(allowed) return true;
+    customerActive.textContent = "Admin login required to add or rename Konlings.";
+    alert("Admin login is required before you can add or rename a Konling. Open Admin Den, log in, then try again.");
+    return false;
+  }
+
+  async function openCustomerEditor(mode){
     if(spinning) return;
+    if(!(await requireAdminIdentityAccess())) return;
     customerEditor.classList.add("show");
     customerEditor.dataset.mode = mode;
     var profile = getActiveProfile();
@@ -1960,11 +1992,39 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     if(!name) return;
     var mode = customerEditor.dataset.mode || "new";
 
+    if(!(await requireAdminIdentityAccess())) return;
+
     if(mode === "edit" && activeCustomerKey && customers[activeCustomerKey]){
       var oldKey = activeCustomerKey;
       var profile = ensureProfileShape(customers[oldKey]);
+
+      if(!/^K\d+$/.test(profile.clientId || "")){
+        customerActive.textContent = "This old local profile cannot be renamed. Delete it and add it again while logged into Admin Den.";
+        return;
+      }
+
+      saveCustomerBtn.disabled = true;
+      customerActive.textContent = "Renaming "+profile.name+"…";
+
+      var renamed;
+      try{
+        renamed = await centralClient.rpc("rename_konling_profile",{
+          p_konling_id:profile.clientId,
+          p_username:name
+        });
+      }catch(e){
+        renamed = {error:e};
+      }
+
+      saveCustomerBtn.disabled = false;
+
+      if(renamed.error || !renamed.data || !renamed.data.length){
+        customerActive.textContent = "Could not rename this Konling. Nothing was changed.";
+        return;
+      }
+
       var newKey = customerKey(name);
-      profile.name = name;
+      profile.name = renamed.data[0].username || name;
       if(newKey !== oldKey){
         customers[newKey] = profile;
         delete customers[oldKey];
@@ -2078,6 +2138,47 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     renderCustomerState();
     deleteCustomerBtn.disabled = false;
   }
+
+  function removeDeletedKonlingFromLocal(konlingId){
+    if(!konlingId) return;
+    var removedActive = false;
+    Object.keys(customers).forEach(function(key){
+      var p = ensureProfileShape(customers[key]);
+      if(p && p.clientId === konlingId){
+        if(activeCustomerKey === key) removedActive = true;
+        delete customers[key];
+      }
+    });
+    if(removedActive) activeCustomerKey = "";
+    saveCustomers();
+    renderCustomerOptions();
+    if(!spinning){
+      resetPull();
+      renderCustomerState();
+    }
+  }
+
+  var adminSyncChannel = ("BroadcastChannel" in window)
+    ? new BroadcastChannel("whisk-whim-admin-sync")
+    : null;
+
+  if(adminSyncChannel){
+    adminSyncChannel.onmessage = function(e){
+      if(e.data && e.data.type === "konling-deleted"){
+        removeDeletedKonlingFromLocal(e.data.konlingId);
+      }
+    };
+  }
+
+  window.addEventListener("storage",function(e){
+    if(e.key !== "whiskWhimAdminSync" || !e.newValue) return;
+    try{
+      var msg = JSON.parse(e.newValue);
+      if(msg && msg.type === "konling-deleted"){
+        removeDeletedKonlingFromLocal(msg.konlingId);
+      }
+    }catch(err){}
+  });
 
   function renderCustomerState(){
     var profile = ensureProfileShape(getActiveProfile());
