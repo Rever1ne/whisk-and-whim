@@ -1784,6 +1784,45 @@ body{
     display: none !important;
     animation: none !important;
   }
+  #whiskCinema .wc-ticket {
+    left: 50% !important;
+    top: 50% !important;
+    width: min(440px, calc(100vw - 40px)) !important;
+    padding: 28px 30px 26px !important;
+    transform: translate(-50%, -50%) scale(.94) rotate(-1deg) !important;
+    z-index: 10 !important;
+    border-width: 3px !important;
+    border-radius: 22px !important;
+  }
+  #whiskCinema .wc-ticket.show {
+    animation: ticketCenteredIn .58s cubic-bezier(.16,.84,.22,1.12) forwards !important;
+  }
+  #whiskCinema .wc-ticket-head { font-size: 26px !important; }
+  #whiskCinema .wc-ticket-sub { font-size: 13px !important; margin: 5px 0 15px !important; }
+  #whiskCinema .wc-ticket-row { font-size: 16px !important; padding: 8px 0 !important; }
+  #whiskCinema .wc-ticket-order { font-size: 16px !important; padding: 12px !important; margin-top: 13px !important; }
+  #wcSkip { display: none !important; }
+  .wc-ticket-continue {
+    display: block;
+    width: 100%;
+    margin-top: 18px;
+    border: 2px solid #6d4056;
+    border-radius: 14px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #e989b5, #f3a6c8);
+    color: #fff;
+    font: 900 16px/1.2 "Nunito", sans-serif;
+    letter-spacing: .03em;
+    box-shadow: 0 5px 0 rgba(109,64,86,.2);
+    cursor: pointer;
+  }
+  .wc-ticket-continue:hover { filter: brightness(1.04); transform: translateY(-1px); }
+  .wc-ticket-continue:focus-visible { outline: 3px solid #397eb8; outline-offset: 3px; }
+  @keyframes ticketCenteredIn {
+    0% { opacity: 0; transform: translate(-50%, calc(-50% + 34px)) scale(.86) rotate(-2deg); }
+    70% { opacity: 1; transform: translate(-50%, calc(-50% - 5px)) scale(1.02) rotate(.6deg); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+  }
 </style>
 </head>
 <body>
@@ -2825,6 +2864,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       <div class="wc-ticket-row"><span>Konling</span><b id="wcKonling">K0000</b></div>
       <div class="wc-ticket-row"><span>Guarantee</span><b id="wcPity">0 / 4</b></div>
       <div class="wc-ticket-order">One mystery milkshake, coming right up ♡</div>
+      <button class="wc-ticket-continue" id="wcTicketContinue" type="button">Continue</button>
     </div>
 
     <div class="wc-rarity-halo"></div>
@@ -3724,9 +3764,8 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     var profile=ensureProfileShape(getActiveProfile());
     var central=pendingCentralPull || {};
     var theme=wcThemeForStars(tier.stars);
-    var finished=false;
-    var skip=document.getElementById("wcSkip");
     var ticket=document.getElementById("wcTicket");
+    var continueButton=document.getElementById("wcTicketContinue");
 
     scene.style.setProperty("--wc-accent",theme.accent);
     scene.style.setProperty("--wc-soft",theme.soft);
@@ -3740,18 +3779,19 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     document.getElementById("wcPity").textContent=Number(central.pity != null ? central.pity : (profile ? profile.pity : 0))+" / "+GUARANTEE_AFTER_MISSES;
     document.getElementById("wcStars").textContent=stars(tier.stars);
     document.getElementById("wcName").textContent=shake[0];
+    continueButton.disabled=false;
 
-    function finish(){
-      if(finished) return;
-      finished=true;
-      scene.classList.remove("show","phase-ticket");
-      scene.setAttribute("aria-hidden","true");
-    }
-
-    skip.onclick=finish;
     ticket.classList.add("show");
-    await wcWait(1250);
-    finish();
+    await new Promise(function(resolve){
+      continueButton.onclick=function(){
+        continueButton.disabled=true;
+        scene.classList.remove("show","phase-ticket");
+        scene.setAttribute("aria-hidden","true");
+        resolve();
+      };
+    });
+    continueButton.onclick=null;
+    continueButton.disabled=false;
     await wcWait(210);
   }
 
