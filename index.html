@@ -1412,6 +1412,169 @@ body{
   100%{opacity:1;transform:translate(-50%,0) rotate(-2deg) scale(1)}
 }
 
+
+/* ===== Anime whisk prelude + hold-to-continue reveal ===== */
+.wc-whisk-panel{
+  position:absolute;left:60%;top:52%;width:360px;height:360px;z-index:9;
+  transform:translate(-50%,-50%) scale(.72) rotate(2deg);opacity:0;pointer-events:none;
+}
+.wc-whisk-panel.show{animation:wcWhiskPanelIn .52s cubic-bezier(.15,.84,.2,1.12) forwards}
+.wc-whisk-panel.out{animation:wcWhiskPanelOut .38s ease forwards}
+.wc-whisk-caption{
+  position:absolute;left:50%;top:-6px;transform:translateX(-50%) rotate(-4deg);
+  font-size:25px;font-weight:1000;font-style:italic;letter-spacing:-.03em;color:#fff8fc;
+  -webkit-text-stroke:2px #5a4862;text-shadow:4px 5px 0 rgba(228,126,174,.62),0 0 18px var(--wc-glow);
+  white-space:nowrap
+}
+.wc-bowl{
+  position:absolute;left:50%;bottom:27px;width:240px;height:132px;transform:translateX(-50%);
+  border:5px solid #415f78;border-top-width:4px;border-radius:15px 15px 110px 110px;
+  background:
+    linear-gradient(155deg,rgba(255,255,255,.56) 0 22%,transparent 23%),
+    linear-gradient(180deg,#f9eff6,#d8e8f4 72%);
+  box-shadow:8px 9px 0 rgba(34,50,67,.24),inset -24px -18px 0 rgba(93,129,157,.12);
+  overflow:hidden
+}
+.wc-bowl:before{
+  content:"";position:absolute;left:11px;right:11px;top:10px;height:51px;border-radius:50%;
+  background:
+    radial-gradient(circle at 33% 35%,rgba(255,255,255,.86) 0 8px,transparent 9px),
+    radial-gradient(circle at 65% 58%,rgba(255,255,255,.62) 0 5px,transparent 6px),
+    conic-gradient(from 40deg,var(--wc-soft),#f7b9d1,var(--wc-accent),#fff0b8,var(--wc-soft));
+  border:4px solid #6c5571;box-shadow:inset -14px -7px 0 rgba(75,64,91,.12)
+}
+.whisk-cinema.whisking .wc-bowl:before{animation:wcBatterSpin .42s linear infinite}
+.wc-bowl:after{
+  content:"";position:absolute;left:24px;right:24px;bottom:17px;height:17px;border-radius:50%;
+  background:rgba(75,99,118,.12);filter:blur(2px)
+}
+.wc-whisk-tool{
+  position:absolute;left:53%;top:37px;width:105px;height:205px;
+  transform:translateX(-50%) rotate(17deg);transform-origin:54% 88%;z-index:4
+}
+.wc-whisk-handle{
+  position:absolute;left:45px;top:0;width:20px;height:103px;border-radius:13px;
+  background:linear-gradient(90deg,#f8c6da,#dc7fa7 68%);border:4px solid #563e56;
+  box-shadow:5px 5px 0 rgba(50,55,72,.18)
+}
+.wc-whisk-handle:after{
+  content:"";position:absolute;left:50%;bottom:-16px;width:8px;height:27px;transform:translateX(-50%);
+  background:#687d91;border:2px solid #3f5266;border-radius:6px
+}
+.wc-whisk-wire{
+  position:absolute;left:50%;top:100px;width:62px;height:90px;transform:translateX(-50%);
+}
+.wc-whisk-wire i{
+  position:absolute;left:50%;top:0;width:52px;height:88px;border:4px solid #52697e;border-top:0;border-radius:0 0 50% 50%;
+  transform-origin:50% 0
+}
+.wc-whisk-wire i:nth-child(1){transform:translateX(-50%) scaleX(.36)}
+.wc-whisk-wire i:nth-child(2){transform:translateX(-50%) scaleX(.66)}
+.wc-whisk-wire i:nth-child(3){transform:translateX(-50%) scaleX(.96)}
+.whisk-cinema.whisking .wc-whisk-tool{animation:wcWhiskStroke .15s steps(2,end) infinite}
+.whisk-cinema.whisking .wc-bowl{animation:wcBowlBounce .3s steps(2,end) infinite}
+.wc-whisk-splash{position:absolute;border-radius:50%;background:#ffd2e3;border:3px solid #704f66;opacity:0}
+.wc-ws1{left:53px;top:147px;width:16px;height:12px}.wc-ws2{right:62px;top:127px;width:12px;height:10px}.wc-ws3{right:35px;top:171px;width:10px;height:8px}
+.whisk-cinema.whisking .wc-whisk-splash{animation:wcWhiskSplash .55s ease-out infinite}
+.whisk-cinema.whisking .wc-ws2{animation-delay:-.18s}.whisk-cinema.whisking .wc-ws3{animation-delay:-.34s}
+.wc-shaka{
+  position:absolute;right:-25px;top:112px;color:#fff;font-size:27px;font-weight:1000;font-style:italic;
+  -webkit-text-stroke:2px #53657a;text-shadow:4px 4px 0 #e788b1;opacity:0;transform:rotate(10deg)
+}
+.whisk-cinema.whisking .wc-shaka{animation:wcShaka .32s steps(2,end) infinite alternate}
+.wc-whisk-speed{
+  position:absolute;inset:22px -12px 58px;opacity:0;
+  background:repeating-conic-gradient(from 80deg at 52% 58%,transparent 0 8deg,rgba(255,255,255,.58) 8.4deg 9deg,transparent 9.4deg 18deg);
+  mask-image:radial-gradient(circle at 52% 58%,transparent 0 31%,#000 47% 74%,transparent 79%)
+}
+.whisk-cinema.whisking .wc-whisk-speed{animation:wcWhiskSpeed .24s steps(2,end) infinite}
+
+.wc-machine{visibility:hidden}
+.wc-machine.show{visibility:visible}
+.whisk-cinema.blender-phase .wc-machine{visibility:visible}
+
+.wc-cup-body{
+  border-color:#3f596e!important;
+  border-width:5px!important;
+  box-shadow:inset -18px 0 0 rgba(62,77,98,.12),inset 0 0 0 3px rgba(255,255,255,.23),8px 8px 0 rgba(28,45,61,.20)!important;
+}
+.wc-cup-body:before{
+  content:"";position:absolute;left:15px;top:13px;width:15px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,.72);transform:rotate(4deg)
+}
+.wc-cup-body:after{
+  content:"✦";position:absolute;right:14px;top:33px;color:#fff;font-size:17px;font-weight:1000;
+  text-shadow:2px 2px 0 rgba(80,72,94,.20)
+}
+.wc-straw{
+  box-shadow:0 0 0 2px #435e73,4px 4px 0 rgba(35,52,67,.17)
+}
+.wc-cream span{
+  box-shadow:inset -8px -5px 0 rgba(226,184,203,.20),3px 3px 0 rgba(79,57,73,.14)
+}
+.wc-final:before,.wc-final:after{
+  content:"";position:absolute;border-radius:50%;pointer-events:none;opacity:0
+}
+.wc-final:before{
+  left:18px;top:71px;width:24px;height:24px;border:4px solid #fff;border-left-color:transparent;border-bottom-color:transparent;transform:rotate(18deg)
+}
+.wc-final:after{
+  right:17px;top:126px;width:13px;height:13px;background:#fff;box-shadow:-10px 10px 0 rgba(255,255,255,.72),10px -13px 0 rgba(255,255,255,.62)
+}
+.whisk-cinema.cream .wc-final:before,.whisk-cinema.cream .wc-final:after{animation:wcAnimeMilkSpark .62s ease .35s forwards}
+
+.wc-continue{
+  display:inline-block;margin-top:15px;padding:12px 22px;border:3px solid #583e55;border-radius:999px;
+  background:linear-gradient(180deg,#ffd7e6,#e98fb5);color:#57364a;font-size:12px;font-weight:1000;
+  letter-spacing:.10em;box-shadow:0 6px 0 #9b5c79,0 12px 22px rgba(27,38,52,.24);
+  opacity:0;transform:translateY(12px) scale(.9);pointer-events:none;cursor:pointer
+}
+.whisk-cinema.waiting .wc-final{pointer-events:auto}
+.whisk-cinema.waiting .wc-continue{
+  opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
+  animation:wcContinueIn .42s cubic-bezier(.18,.82,.2,1.12) forwards
+}
+.wc-continue:hover{transform:translateY(-2px) scale(1.03)}
+.wc-continue:active{transform:translateY(4px) scale(.98);box-shadow:0 2px 0 #9b5c79,0 7px 14px rgba(27,38,52,.20)}
+
+@keyframes wcWhiskPanelIn{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.58) rotate(-8deg)}
+  72%{opacity:1;transform:translate(-50%,-50%) scale(1.05) rotate(3deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(1deg)}
+}
+@keyframes wcWhiskPanelOut{to{opacity:0;transform:translate(-38%,-62%) scale(.72) rotate(8deg)}}
+@keyframes wcBatterSpin{to{transform:rotate(360deg)}}
+@keyframes wcWhiskStroke{
+  0%{transform:translateX(-50%) rotate(10deg) translateX(-11px)}
+  100%{transform:translateX(-50%) rotate(24deg) translateX(11px)}
+}
+@keyframes wcBowlBounce{50%{transform:translateX(-50%) translateY(3px) rotate(-1deg)}}
+@keyframes wcWhiskSplash{
+  0%{opacity:0;transform:translate(0,0) scale(.5)}
+  34%{opacity:1}
+  100%{opacity:0;transform:translate(18px,-52px) scale(1)}
+}
+@keyframes wcShaka{
+  from{opacity:.65;transform:rotate(7deg) scale(.92)}
+  to{opacity:1;transform:rotate(12deg) scale(1.08)}
+}
+@keyframes wcWhiskSpeed{from{opacity:.18;transform:rotate(0)}to{opacity:.58;transform:rotate(4deg)}}
+@keyframes wcAnimeMilkSpark{to{opacity:1;transform:scale(1.14) rotate(36deg)}}
+@keyframes wcContinueIn{
+  0%{opacity:0;transform:translateY(14px) scale(.86)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@media(max-width:760px){
+  .wc-whisk-panel{left:50%;top:62%;width:310px;height:310px}
+  .wc-whisk-caption{font-size:21px;top:5px}
+  .wc-bowl{width:205px;height:112px;bottom:24px}
+  .wc-whisk-tool{top:35px;transform:translateX(-50%) rotate(17deg) scale(.86)}
+  .wc-shaka{right:-5px;top:105px;font-size:22px}
+  .wc-machine{margin-top:190px}
+  .wc-final{top:62%}
+}
+
 </style>
 </head>
 <body>
@@ -2044,6 +2207,20 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     </div>
 
     <div class="wc-rarity-halo"></div>
+
+    <div class="wc-whisk-panel" id="wcWhiskPanel" aria-hidden="true">
+      <div class="wc-whisk-caption">WHISK! WHISK! ♡</div>
+      <div class="wc-whisk-speed"></div>
+      <div class="wc-bowl"></div>
+      <div class="wc-whisk-tool">
+        <div class="wc-whisk-handle"></div>
+        <div class="wc-whisk-wire"><i></i><i></i><i></i></div>
+      </div>
+      <i class="wc-whisk-splash wc-ws1"></i>
+      <i class="wc-whisk-splash wc-ws2"></i>
+      <i class="wc-whisk-splash wc-ws3"></i>
+      <div class="wc-shaka">SHAKA! SHAKA!</div>
+    </div>
     <div class="wc-machine" id="wcMachine">
       <div class="wc-lid"></div>
       <div class="wc-jar">
@@ -2071,6 +2248,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       <div class="wc-stars" id="wcStars"></div>
       <div class="wc-name" id="wcName"></div>
       <div class="wc-label" id="wcLabel"></div>
+      <button class="wc-continue" id="wcContinue" type="button">CONTINUE ♡</button>
     </div>
 
     <span class="wc-spark wc-s1">✦</span><span class="wc-spark wc-s2">♡</span>
@@ -2906,6 +3084,9 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     var i2=document.getElementById("wcI2");
     var i3=document.getElementById("wcI3");
     var label=document.getElementById("wcLabel");
+    var whiskPanel=document.getElementById("wcWhiskPanel");
+    var continueBtn=document.getElementById("wcContinue");
+    var continueResolver=null;
 
     ticket.className="wc-ticket";
     machine.className="wc-machine";
@@ -2914,6 +3095,11 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     i1.className="wc-ingredient wc-i1";
     i2.className="wc-ingredient wc-i2";
     i3.className="wc-ingredient wc-i3";
+    if(whiskPanel) whiskPanel.className="wc-whisk-panel";
+    if(continueBtn){
+      continueBtn.onclick=null;
+      continueBtn.disabled=false;
+    }
 
     document.getElementById("wcOrder").textContent="#"+String(Number(central.total_pulls || (profile ? profile.totalPulls+1 : 1))).padStart(3,"0");
     document.getElementById("wcKonling").textContent=(profile && profile.clientId ? profile.clientId+" · "+profile.name : "Konling");
@@ -2926,17 +3112,36 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     function finish(){
       if(finished) return;
       finished=true;
-      scene.classList.remove("show");
+      if(continueResolver){
+        var resolveContinue=continueResolver;
+        continueResolver=null;
+        resolveContinue();
+      }
+      scene.classList.remove("show","waiting","whisking","blender-phase","anime-blend","anime-impact","anime-reveal","flash","served","cream","sparkle");
       scene.setAttribute("aria-hidden","true");
     }
     skip.onclick=finish;
 
     ticket.classList.add("show");
-    await wcWait(540);
+    await wcWait(850);
     if(finished) return;
 
+    if(whiskPanel){
+      whiskPanel.classList.add("show");
+      scene.classList.add("whisking");
+      await wcWait(tier.stars>=4?1750:1500);
+      if(finished) return;
+      scene.classList.remove("whisking");
+      whiskPanel.classList.add("out");
+      scene.classList.add("anime-impact");
+      await wcWait(360);
+      if(finished) return;
+    }
+
+    scene.classList.remove("anime-impact");
+    scene.classList.add("blender-phase");
     machine.classList.add("show");
-    await wcWait(420);
+    await wcWait(460);
     if(finished) return;
 
     i1.classList.add("drop");
@@ -2969,8 +3174,24 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     if(finished) return;
 
     scene.classList.add("cream","sparkle");
-    await wcWait(tier.stars>=5?1750:(tier.stars===4?1450:1120));
+    await wcWait(tier.stars>=5?1750:(tier.stars===4?1450:1250));
     if(finished) return;
+
+    scene.classList.add("waiting");
+    if(continueBtn){
+      await new Promise(function(resolve){
+        continueResolver=resolve;
+        continueBtn.onclick=function(){
+          continueBtn.disabled=true;
+          if(continueResolver){
+            var done=continueResolver;
+            continueResolver=null;
+            done();
+          }
+        };
+      });
+      if(finished) return;
+    }
 
     finish();
     await wcWait(210);
