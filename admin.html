@@ -55,8 +55,8 @@
   <section id="loginView" class="card login">
     <div class="brand"><b>Whisk & Whim</b><span>Private fox den</span></div>
     <h1>Admin login</h1>
-    <p>This room is for Revie only. Enter the approved admin email, then use the one-time code sent to your inbox.</p>
-    <div class="field"><label for="email">Admin email</label><input id="email" type="email" autocomplete="email" placeholder="yuerinkyubi@gmail.com"></div>
+    <p>Enter your admin email to receive a one-time code.</p>
+    <div class="field"><label for="email">Admin email</label><input id="email" name="whisk-admin-login" type="email" autocomplete="off" placeholder="Enter admin email"></div>
     <button class="btn" id="loginBtn">SEND LOGIN CODE</button>
     <div class="field" id="otpField" style="display:none"><label for="otp">One-time code</label><input id="otp" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code"></div>
     <button class="btn ghost" id="verifyBtn" style="display:none">VERIFY & ENTER</button>
@@ -135,9 +135,8 @@
     }
     var email=document.getElementById("email").value.trim().toLowerCase();
     if(!email){loginStatus.textContent="Enter your admin email first.";return;}
-    if(email!=="yuerinkyubi@gmail.com"){loginStatus.textContent="That email is not approved for the admin den.";return;}
     loginStatus.textContent="Sending your one-time code…";
-    var res=await client.auth.signInWithOtp({email:email,options:{shouldCreateUser:true,emailRedirectTo:location.href}});
+    var res=await client.auth.signInWithOtp({email:email,options:{shouldCreateUser:false,emailRedirectTo:location.href}});
     if(res.error){loginStatus.textContent=res.error.message;return;}
     document.getElementById("otpField").style.display="grid";
     document.getElementById("verifyBtn").style.display="inline-block";
