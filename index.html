@@ -3099,6 +3099,16 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     else localStorage.removeItem(ACTIVE_KEY);
   }
 
+  var legacyIdMigrated = false;
+  Object.keys(customers).forEach(function(key){
+    var profile = customers[key];
+    if(profile && profile.clientId === "K0013" && String(profile.name || "").trim().toLowerCase() === "revie"){
+      profile.clientId = "K0001";
+      legacyIdMigrated = true;
+    }
+  });
+  if(legacyIdMigrated) saveCustomers();
+
   function customerKey(name){
     return name.trim().toLowerCase();
   }
