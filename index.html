@@ -1063,6 +1063,227 @@ body{
   .side-spark,.side-heart,.side-shake,.side-ring{animation:none!important}
 }
 
+
+/* ===== Whisk & Whim cinematic milkshake sequence ===== */
+.whisk-cinema{
+  --wc-accent:#73b8f4;
+  --wc-soft:#dceeff;
+  --wc-glow:rgba(115,184,244,.45);
+  position:fixed;inset:0;z-index:10050;display:grid;place-items:center;
+  opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;
+  transition:opacity .24s ease,visibility .24s ease;
+}
+.whisk-cinema.show{opacity:1;visibility:visible;pointer-events:auto}
+.wc-backdrop{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(255,255,255,.22),transparent 23%),
+    radial-gradient(circle at 18% 18%,rgba(245,174,206,.22),transparent 28%),
+    radial-gradient(circle at 84% 24%,rgba(145,193,229,.28),transparent 30%),
+    linear-gradient(150deg,rgba(24,45,64,.91),rgba(49,66,87,.94));
+  backdrop-filter:blur(10px);
+}
+.whisk-cinema.r4 .wc-backdrop{
+  background:
+    radial-gradient(circle at 50% 42%,rgba(238,220,255,.25),transparent 24%),
+    radial-gradient(circle at 15% 18%,rgba(245,174,206,.20),transparent 28%),
+    linear-gradient(150deg,rgba(36,37,70,.94),rgba(66,57,95,.96));
+}
+.whisk-cinema.r5 .wc-backdrop{
+  background:
+    radial-gradient(circle at 50% 41%,rgba(255,229,156,.28),transparent 23%),
+    radial-gradient(circle at 16% 18%,rgba(255,185,213,.23),transparent 28%),
+    radial-gradient(circle at 84% 24%,rgba(171,218,255,.20),transparent 29%),
+    linear-gradient(150deg,rgba(55,38,59,.95),rgba(76,55,87,.97));
+}
+.wc-skip{
+  position:absolute;right:20px;top:18px;z-index:6;border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.10);color:#fff;border-radius:999px;padding:8px 13px;
+  font-size:11px;font-weight:850;letter-spacing:.05em;cursor:pointer;backdrop-filter:blur(8px)
+}
+.wc-stage{
+  position:relative;z-index:2;width:min(94vw,900px);height:min(82vh,690px);min-height:560px;
+  display:grid;place-items:center;perspective:900px;
+}
+.wc-ticket{
+  position:absolute;left:50%;top:14px;width:272px;padding:15px 17px 17px;
+  transform:translate(-50%,-36px) rotate(-2deg) scale(.94);opacity:0;
+  background:linear-gradient(180deg,#fffafd,#f9edf4);border:1px solid rgba(165,101,132,.24);
+  border-radius:16px;box-shadow:0 18px 44px rgba(16,29,44,.24);text-align:left;
+}
+.wc-ticket.show{animation:wcTicketIn .58s cubic-bezier(.2,.78,.26,1) forwards}
+.wc-ticket:after{
+  content:"";position:absolute;left:10px;right:10px;bottom:-7px;height:13px;
+  background:linear-gradient(135deg,transparent 7px,#f9edf4 0) 0 0/14px 14px repeat-x;
+}
+.wc-ticket-head{font-size:17px;font-weight:950;color:#6f3653;text-align:center;letter-spacing:.05em}
+.wc-ticket-sub{font-size:9px;color:#8b6e7d;text-align:center;text-transform:uppercase;letter-spacing:.16em;margin:2px 0 10px}
+.wc-ticket-row{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:#506f89;padding:3px 0;border-top:1px dashed rgba(83,113,139,.13)}
+.wc-ticket-row b{color:#294b68}
+.wc-ticket-order{margin-top:8px;padding-top:8px;border-top:1px dashed rgba(83,113,139,.26);font-size:12px;font-weight:900;color:#a54f78;text-align:center}
+.wc-machine{
+  position:relative;width:238px;height:354px;margin-top:55px;opacity:0;transform:translateY(20px) scale(.94);
+  filter:drop-shadow(0 20px 30px rgba(15,29,44,.28));
+}
+.wc-machine.show{animation:wcMachineIn .46s cubic-bezier(.2,.78,.26,1) forwards}
+.wc-lid{
+  position:absolute;left:39px;top:9px;width:160px;height:24px;border-radius:18px 18px 9px 9px;
+  background:linear-gradient(#eef7fd,#a9c8df);border:3px solid #557a98;z-index:4
+}
+.wc-jar{
+  position:absolute;left:48px;top:31px;width:142px;height:205px;overflow:hidden;
+  clip-path:polygon(7% 0,93% 0,84% 100%,16% 100%);
+  border-radius:16px 16px 24px 24px;
+  background:linear-gradient(110deg,rgba(255,255,255,.58),rgba(201,226,241,.22));
+  box-shadow:inset 0 0 0 3px rgba(85,122,152,.9),inset 0 0 0 6px rgba(255,255,255,.18);
+}
+.wc-jar:after{
+  content:"";position:absolute;inset:8px 18px 14px 24px;border-radius:40%;
+  background:linear-gradient(105deg,rgba(255,255,255,.34),transparent 48%);pointer-events:none;z-index:5
+}
+.wc-liquid{
+  position:absolute;left:7px;right:7px;bottom:-150px;height:158px;border-radius:20px 20px 25px 25px;
+  background:linear-gradient(180deg,var(--wc-soft),var(--wc-accent));opacity:.94;
+  transition:bottom .65s cubic-bezier(.2,.76,.24,1);z-index:1
+}
+.wc-liquid.fill{bottom:5px}
+.wc-liquid:before{
+  content:"";position:absolute;left:-8%;top:-11px;width:116%;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.47);box-shadow:0 5px 12px rgba(255,255,255,.18)
+}
+.wc-blades{
+  position:absolute;left:50%;bottom:17px;width:46px;height:6px;border-radius:999px;
+  background:#607f98;transform:translateX(-50%);z-index:3
+}
+.wc-blades:before{content:"";position:absolute;inset:0;transform:rotate(90deg);border-radius:inherit;background:inherit}
+.wc-machine.blending .wc-blades{animation:wcBlade .12s linear infinite}
+.wc-machine.blending{animation:wcBlendShake .16s linear infinite}
+.wc-base{
+  position:absolute;left:25px;bottom:3px;width:188px;height:116px;border-radius:30px 30px 25px 25px;
+  background:linear-gradient(160deg,#d8e8f4,#86a9c5 72%);border:3px solid #547995;
+  box-shadow:inset 0 3px rgba(255,255,255,.3)
+}
+.wc-base:before{
+  content:"WHISK";position:absolute;left:50%;top:18px;transform:translateX(-50%);
+  color:#31536e;font-size:12px;font-weight:950;letter-spacing:.18em
+}
+.wc-power{
+  position:absolute;left:50%;bottom:22px;width:29px;height:29px;transform:translateX(-50%);
+  border-radius:50%;background:#ffd8e7;border:3px solid #8e6076;
+  box-shadow:inset 0 2px rgba(255,255,255,.6)
+}
+.wc-power.live{animation:wcPowerPulse .6s ease-in-out infinite alternate}
+.wc-bubble{
+  position:absolute;border-radius:50%;background:rgba(255,255,255,.72);z-index:2;opacity:0
+}
+.wc-machine.blending .wc-bubble{animation:wcBubbleUp .85s ease-in infinite}
+.wc-b1{width:10px;height:10px;left:79px;top:172px;animation-delay:-.2s!important}
+.wc-b2{width:7px;height:7px;left:117px;top:185px;animation-delay:-.55s!important}
+.wc-b3{width:13px;height:13px;left:141px;top:164px;animation-delay:-.38s!important}
+.wc-ingredient{
+  position:absolute;top:43px;z-index:5;opacity:0;transform:translateY(-95px) rotate(0deg) scale(.8)
+}
+.wc-ingredient.drop{animation:wcIngredientDrop .64s cubic-bezier(.25,.76,.28,1.08) forwards}
+.wc-i1{left:78px;width:29px;height:29px;border-radius:50% 50% 46% 54%;background:#ef8fb2;box-shadow:inset -5px -5px rgba(133,63,91,.13)}
+.wc-i1:before{content:"";position:absolute;left:8px;top:-8px;width:12px;height:10px;background:#78a98b;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.wc-i2{left:109px;width:26px;height:26px;background:#f8e5b4;border-radius:8px;transform-origin:center;animation-delay:.13s!important}
+.wc-i3{left:142px;width:28px;height:24px;background:#b8dcf2;border-radius:50%;animation-delay:.26s!important}
+.wc-i3:before,.wc-i3:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#fff;top:7px}
+.wc-i3:before{left:7px}.wc-i3:after{right:6px}
+.wc-flash{
+  position:absolute;left:50%;top:52%;width:120px;height:120px;border-radius:50%;
+  transform:translate(-50%,-50%) scale(.2);opacity:0;background:#fff;z-index:8;pointer-events:none
+}
+.whisk-cinema.flash .wc-flash{animation:wcFlash .52s ease-out forwards}
+.wc-final{
+  position:absolute;left:50%;top:52%;width:250px;height:350px;
+  transform:translate(-50%,-43%) scale(.72);opacity:0;z-index:9;text-align:center;pointer-events:none
+}
+.whisk-cinema.served .wc-machine{animation:wcMachineOut .34s ease forwards}
+.whisk-cinema.served .wc-final{animation:wcFinalIn .68s cubic-bezier(.16,.82,.2,1.08) .12s forwards}
+.wc-cup{
+  position:relative;width:128px;height:190px;margin:22px auto 12px;
+  filter:drop-shadow(0 18px 20px rgba(20,32,45,.25))
+}
+.wc-cup-body{
+  position:absolute;left:20px;bottom:0;width:88px;height:133px;
+  clip-path:polygon(10% 0,90% 0,78% 100%,22% 100%);
+  border-radius:10px 10px 18px 18px;border:4px solid #587d9b;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.34),transparent 24%),
+    linear-gradient(180deg,var(--wc-soft),var(--wc-accent));
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.17)
+}
+.wc-cream{
+  position:absolute;left:28px;top:29px;width:72px;height:54px;opacity:0;transform:scale(.45) translateY(15px);
+  filter:drop-shadow(0 3px 1px rgba(109,76,91,.12))
+}
+.wc-cream span{
+  position:absolute;left:50%;transform:translateX(-50%);height:18px;background:#fff5fa;border:3px solid #b77896;border-radius:50%
+}
+.wc-cream span:nth-child(1){width:72px;bottom:0}.wc-cream span:nth-child(2){width:55px;bottom:12px}.wc-cream span:nth-child(3){width:34px;bottom:24px}
+.whisk-cinema.cream .wc-cream{animation:wcCreamPop .48s cubic-bezier(.22,.8,.2,1.18) forwards}
+.wc-straw{
+  position:absolute;left:88px;top:5px;width:7px;height:85px;border-radius:999px;
+  background:repeating-linear-gradient(180deg,#537e9f 0 9px,#f8c6d9 9px 16px);
+  transform:rotate(13deg);transform-origin:bottom;opacity:0
+}
+.whisk-cinema.cream .wc-straw{animation:wcStrawIn .38s ease .2s forwards}
+.wc-cherry{
+  position:absolute;left:58px;top:21px;width:15px;height:15px;border-radius:50%;background:#d75f8b;
+  border:2px solid #a7466a;opacity:0;transform:translateY(-20px)
+}
+.wc-cherry:before{content:"";position:absolute;width:16px;height:12px;border-left:2px solid #65886d;border-radius:50%;left:8px;top:-11px;transform:rotate(-22deg)}
+.whisk-cinema.cream .wc-cherry{animation:wcCherryDrop .38s ease .34s forwards}
+.wc-stars{font-size:20px;font-weight:950;color:#ffe49a;text-shadow:0 2px 12px rgba(255,207,95,.55);letter-spacing:.04em}
+.wc-name{margin-top:2px;font-size:24px;line-height:1.06;font-weight:950;color:#fff;text-shadow:0 3px 18px rgba(13,25,38,.35)}
+.wc-label{display:inline-block;margin-top:9px;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.88);color:#6b3850;font-size:10px;font-weight:950;letter-spacing:.08em}
+.wc-label.dupe{background:#f8ddb0;color:#704814}
+.wc-tadaa{position:absolute;left:50%;top:16%;transform:translateX(-50%) scale(.6) rotate(-5deg);z-index:11;opacity:0;color:#fff;font-size:28px;font-weight:950;letter-spacing:.02em;text-shadow:0 5px 20px rgba(35,20,39,.35)}
+.whisk-cinema.cream .wc-tadaa{animation:wcTadaa .54s cubic-bezier(.2,.8,.2,1.15) forwards}
+.wc-spark{
+  position:absolute;z-index:10;opacity:0;color:#fff;font-weight:900;text-shadow:0 0 12px var(--wc-glow);pointer-events:none
+}
+.whisk-cinema.sparkle .wc-spark{animation:wcSpark 1.1s ease-out forwards}
+.wc-s1{left:31%;top:31%;font-size:30px}.wc-s2{left:25%;top:55%;font-size:18px;animation-delay:.12s!important}
+.wc-s3{right:29%;top:28%;font-size:24px;animation-delay:.18s!important}.wc-s4{right:24%;top:54%;font-size:20px;animation-delay:.3s!important}
+.wc-s5{left:39%;top:23%;font-size:15px;animation-delay:.22s!important}.wc-s6{right:39%;top:65%;font-size:27px;animation-delay:.4s!important}
+.wc-rarity-halo{
+  position:absolute;left:50%;top:49%;width:390px;height:390px;border-radius:50%;transform:translate(-50%,-50%) scale(.72);
+  border:1px solid rgba(255,255,255,.16);box-shadow:0 0 75px var(--wc-glow),inset 0 0 55px var(--wc-glow);
+  opacity:0;pointer-events:none
+}
+.whisk-cinema.r4.sparkle .wc-rarity-halo,.whisk-cinema.r5.sparkle .wc-rarity-halo{animation:wcHalo 1.4s ease-out forwards}
+.whisk-cinema.r5 .wc-rarity-halo{width:470px;height:470px;border:2px solid rgba(255,229,160,.36)}
+.wc-foxmark{
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);color:rgba(255,255,255,.72);
+  font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase
+}
+@keyframes wcTicketIn{to{opacity:1;transform:translate(-50%,0) rotate(-2deg) scale(1)}}
+@keyframes wcMachineIn{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes wcIngredientDrop{0%{opacity:0;transform:translateY(-95px) rotate(-35deg) scale(.75)}25%{opacity:1}100%{opacity:1;transform:translateY(145px) rotate(170deg) scale(.95)}}
+@keyframes wcBlade{to{transform:translateX(-50%) rotate(360deg)}}
+@keyframes wcBlendShake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-3px,1px) rotate(-.6deg)}50%{transform:translate(3px,-1px) rotate(.6deg)}75%{transform:translate(-2px,-1px) rotate(-.4deg)}}
+@keyframes wcBubbleUp{0%{opacity:0;transform:translateY(12px) scale(.6)}35%{opacity:.8}100%{opacity:0;transform:translateY(-86px) scale(1.18)}}
+@keyframes wcPowerPulse{to{background:var(--wc-accent);box-shadow:0 0 13px var(--wc-glow),0 0 30px var(--wc-glow)}}
+@keyframes wcFlash{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}30%{opacity:.95}100%{opacity:0;transform:translate(-50%,-50%) scale(6.3)}}
+@keyframes wcMachineOut{to{opacity:0;transform:translateY(16px) scale(.82);filter:blur(4px)}}
+@keyframes wcFinalIn{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes wcCreamPop{to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes wcStrawIn{from{opacity:0;transform:translateY(-18px) rotate(13deg)}to{opacity:1;transform:translateY(0) rotate(13deg)}}
+@keyframes wcCherryDrop{to{opacity:1;transform:translateY(0)}}
+@keyframes wcTadaa{to{opacity:1;transform:translateX(-50%) scale(1) rotate(-3deg)}}
+@keyframes wcSpark{0%{opacity:0;transform:scale(.4) rotate(0)}30%{opacity:1}100%{opacity:0;transform:scale(1.45) translateY(-28px) rotate(34deg)}}
+@keyframes wcHalo{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}35%{opacity:.85}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}
+@media(max-width:700px){
+  .wc-stage{height:86vh;min-height:540px}.wc-ticket{top:8px;width:236px;padding:12px 14px}
+  .wc-machine{transform-origin:center;width:218px;height:330px;margin-top:62px}
+  .wc-final{top:55%}.wc-tadaa{top:18%;font-size:23px}.wc-skip{right:12px;top:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .whisk-cinema *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 <body>
@@ -1673,6 +1894,56 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
         <p><strong>Rewards:</strong> the milkshake reward field is still being finalized. When a reward is assigned, it will appear on that shake's reveal card. The global reward rules above apply to every assigned reward.</p>
       </div>
     </section>
+  </div>
+</div>
+
+
+<div class="whisk-cinema" id="whiskCinema" aria-hidden="true">
+  <div class="wc-backdrop"></div>
+  <button class="wc-skip" id="wcSkip" type="button">SKIP</button>
+  <div class="wc-stage">
+    <div class="wc-ticket" id="wcTicket">
+      <div class="wc-ticket-head">WHISK &amp; WHIM</div>
+      <div class="wc-ticket-sub">mystery shake order</div>
+      <div class="wc-ticket-row"><span>Order</span><b id="wcOrder">#000</b></div>
+      <div class="wc-ticket-row"><span>Konling</span><b id="wcKonling">K0000</b></div>
+      <div class="wc-ticket-row"><span>Guarantee</span><b id="wcPity">0 / 4</b></div>
+      <div class="wc-ticket-order">One mystery milkshake, coming right up ♡</div>
+    </div>
+
+    <div class="wc-rarity-halo"></div>
+    <div class="wc-machine" id="wcMachine">
+      <div class="wc-lid"></div>
+      <div class="wc-jar">
+        <div class="wc-liquid" id="wcLiquid"></div>
+        <div class="wc-blades"></div>
+      </div>
+      <div class="wc-ingredient wc-i1" id="wcI1"></div>
+      <div class="wc-ingredient wc-i2" id="wcI2"></div>
+      <div class="wc-ingredient wc-i3" id="wcI3"></div>
+      <i class="wc-bubble wc-b1"></i><i class="wc-bubble wc-b2"></i><i class="wc-bubble wc-b3"></i>
+      <div class="wc-base"><div class="wc-power" id="wcPower"></div></div>
+    </div>
+
+    <div class="wc-flash"></div>
+    <div class="wc-tadaa">Tadaa! ♡</div>
+
+    <div class="wc-final">
+      <div class="wc-cup">
+        <div class="wc-straw"></div>
+        <div class="wc-cup-body"></div>
+        <div class="wc-cream"><span></span><span></span><span></span></div>
+        <div class="wc-cherry"></div>
+      </div>
+      <div class="wc-stars" id="wcStars"></div>
+      <div class="wc-name" id="wcName"></div>
+      <div class="wc-label" id="wcLabel"></div>
+    </div>
+
+    <span class="wc-spark wc-s1">✦</span><span class="wc-spark wc-s2">♡</span>
+    <span class="wc-spark wc-s3">✧</span><span class="wc-spark wc-s4">✦</span>
+    <span class="wc-spark wc-s5">♡</span><span class="wc-spark wc-s6">✦</span>
+    <div class="wc-foxmark">freshly blended for the konlings</div>
   </div>
 </div>
 
@@ -2465,6 +2736,111 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     });
   }
 
+
+  function wcWait(ms){
+    return new Promise(function(resolve){ setTimeout(resolve,ms); });
+  }
+
+  function wcThemeForStars(starCount){
+    if(starCount >= 5) return {accent:"#e9a2bd",soft:"#ffe7b8",glow:"rgba(255,214,137,.62)"};
+    if(starCount === 4) return {accent:"#b991e7",soft:"#eadcff",glow:"rgba(190,145,231,.58)"};
+    if(starCount === 3) return {accent:"#73b8f4",soft:"#dceeff",glow:"rgba(115,184,244,.50)"};
+    if(starCount === 2) return {accent:"#d8b15e",soft:"#fff0bd",glow:"rgba(232,190,104,.48)"};
+    return {accent:"#8fcfb5",soft:"#def4e9",glow:"rgba(143,207,181,.46)"};
+  }
+
+  async function playWhiskCinema(tier,shake){
+    var scene=document.getElementById("whiskCinema");
+    if(!scene) return;
+
+    var profile=ensureProfileShape(getActiveProfile());
+    var central=pendingCentralPull || {};
+    var theme=wcThemeForStars(tier.stars);
+    var finished=false;
+    var skip=document.getElementById("wcSkip");
+
+    scene.style.setProperty("--wc-accent",theme.accent);
+    scene.style.setProperty("--wc-soft",theme.soft);
+    scene.style.setProperty("--wc-glow",theme.glow);
+    scene.className="whisk-cinema show"+(tier.stars===4?" r4":tier.stars>=5?" r5":"");
+    scene.setAttribute("aria-hidden","false");
+
+    var ticket=document.getElementById("wcTicket");
+    var machine=document.getElementById("wcMachine");
+    var liquid=document.getElementById("wcLiquid");
+    var power=document.getElementById("wcPower");
+    var i1=document.getElementById("wcI1");
+    var i2=document.getElementById("wcI2");
+    var i3=document.getElementById("wcI3");
+    var label=document.getElementById("wcLabel");
+
+    ticket.className="wc-ticket";
+    machine.className="wc-machine";
+    liquid.className="wc-liquid";
+    power.className="wc-power";
+    i1.className="wc-ingredient wc-i1";
+    i2.className="wc-ingredient wc-i2";
+    i3.className="wc-ingredient wc-i3";
+
+    document.getElementById("wcOrder").textContent="#"+String(Number(central.total_pulls || (profile ? profile.totalPulls+1 : 1))).padStart(3,"0");
+    document.getElementById("wcKonling").textContent=(profile && profile.clientId ? profile.clientId+" · "+profile.name : "Konling");
+    document.getElementById("wcPity").textContent=Number(central.pity != null ? central.pity : (profile ? profile.pity : 0))+" / "+GUARANTEE_AFTER_MISSES;
+    document.getElementById("wcStars").textContent=stars(tier.stars);
+    document.getElementById("wcName").textContent=shake[0];
+    label.textContent=central.duplicate ? "DUPLICATE · +"+Number(central.syrup_earned||tier.syrup)+" SYRUP" : (central.guaranteed ? "GUARANTEED · NEW SERVE" : "FRESH SERVE");
+    label.className="wc-label"+(central.duplicate?" dupe":"");
+
+    function finish(){
+      if(finished) return;
+      finished=true;
+      scene.classList.remove("show");
+      scene.setAttribute("aria-hidden","true");
+    }
+    skip.onclick=finish;
+
+    ticket.classList.add("show");
+    await wcWait(540);
+    if(finished) return;
+
+    machine.classList.add("show");
+    await wcWait(420);
+    if(finished) return;
+
+    i1.classList.add("drop");
+    await wcWait(120);
+    i2.classList.add("drop");
+    await wcWait(120);
+    i3.classList.add("drop");
+    await wcWait(520);
+    if(finished) return;
+
+    liquid.classList.add("fill");
+    power.classList.add("live");
+    await wcWait(560);
+    if(finished) return;
+
+    machine.classList.add("blending");
+    var blendTime=tier.stars>=5?1650:(tier.stars===4?1420:1120);
+    await wcWait(blendTime);
+    if(finished) return;
+
+    machine.classList.remove("blending");
+    scene.classList.add("flash");
+    await wcWait(300);
+    if(finished) return;
+
+    scene.classList.add("served");
+    await wcWait(430);
+    if(finished) return;
+
+    scene.classList.add("cream","sparkle");
+    await wcWait(tier.stars>=5?1750:(tier.stars===4?1450:1120));
+    if(finished) return;
+
+    finish();
+    await wcWait(210);
+  }
+
   async function spin(){
     if(spinning) return;
     var profile = ensureProfileShape(getActiveProfile());
@@ -2573,10 +2949,11 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
       if(selectedTier.stars === 5){
         subcontrol.textContent = "★★★★★ SECRET! Konkon Dreams is breaking through…";
-        setTimeout(function(){
+        setTimeout(async function(){
           var secretShake = selectedTier.shakes.find(function(s){
             return !pendingCentralPull || s[0] === pendingCentralPull.shake_name;
           }) || selectedTier.shakes[0];
+          await playWhiskCinema(selectedTier,secretShake);
           showReveal(selectedTier,secretShake);
           spinBtn.disabled = false;
           spinning = false;
@@ -2610,6 +2987,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       },900);
     }else{
       var shake = selectedTier.shakes[index];
+      await playWhiskCinema(selectedTier,shake);
       showReveal(selectedTier,shake);
       spinBtn.disabled = false;
       spinning = false;
