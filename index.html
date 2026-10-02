@@ -1704,6 +1704,76 @@ body{
   .wc-anime-shake{width:155px;height:196px}
 }
 
+
+/* ===== Clean cinematic phases + temporary milkshake art placeholder ===== */
+.whisk-cinema .wc-ticket,
+.whisk-cinema .wc-whisk-panel,
+.whisk-cinema .wc-anime-panel,
+.whisk-cinema .wc-anime-revie,
+.whisk-cinema .wc-panel-caption,
+.whisk-cinema .wc-machine,
+.whisk-cinema .wc-final,
+.whisk-cinema .wc-tadaa,
+.whisk-cinema .wc-anime-caption,
+.whisk-cinema .wc-rarity-halo,
+.whisk-cinema .wc-sfx,
+.whisk-cinema .wc-anime-lines,
+.whisk-cinema .wc-anime-burst{
+  visibility:hidden;
+}
+.whisk-cinema.phase-ticket .wc-ticket{visibility:visible}
+.whisk-cinema.phase-whisk .wc-whisk-panel,
+.whisk-cinema.phase-whisk .wc-anime-panel,
+.whisk-cinema.phase-whisk .wc-anime-revie,
+.whisk-cinema.phase-whisk .wc-panel-caption{visibility:visible}
+.whisk-cinema.phase-blender .wc-machine,
+.whisk-cinema.phase-blender .wc-sfx,
+.whisk-cinema.phase-blender .wc-anime-lines,
+.whisk-cinema.phase-blender .wc-anime-burst{visibility:visible}
+.whisk-cinema.phase-reveal .wc-final,
+.whisk-cinema.phase-reveal .wc-tadaa,
+.whisk-cinema.phase-reveal .wc-anime-caption,
+.whisk-cinema.phase-reveal .wc-rarity-halo{visibility:visible}
+.whisk-cinema.phase-reveal .wc-spark{visibility:visible}
+.whisk-cinema:not(.phase-reveal) .wc-spark{visibility:hidden!important;animation:none!important}
+
+.whisk-cinema.phase-whisk .wc-machine,
+.whisk-cinema.phase-whisk .wc-final,
+.whisk-cinema.phase-blender .wc-whisk-panel,
+.whisk-cinema.phase-blender .wc-anime-panel,
+.whisk-cinema.phase-blender .wc-anime-revie,
+.whisk-cinema.phase-blender .wc-panel-caption,
+.whisk-cinema.phase-blender .wc-final,
+.whisk-cinema.phase-reveal .wc-machine,
+.whisk-cinema.phase-reveal .wc-whisk-panel,
+.whisk-cinema.phase-reveal .wc-anime-panel,
+.whisk-cinema.phase-reveal .wc-anime-revie,
+.whisk-cinema.phase-reveal .wc-panel-caption,
+.whisk-cinema.phase-reveal .wc-ticket{
+  opacity:0!important;
+  animation:none!important;
+}
+
+.wc-art-placeholder{
+  width:174px;height:184px;margin:16px auto 12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  border:3px dashed rgba(255,255,255,.72);border-radius:24px;
+  background:rgba(255,255,255,.10);
+  box-shadow:inset 0 0 28px rgba(255,255,255,.08),0 14px 30px rgba(24,34,48,.18);
+  backdrop-filter:blur(4px)
+}
+.wc-art-question{
+  font-size:86px;line-height:.9;font-weight:1000;color:#fff;
+  text-shadow:4px 5px 0 rgba(71,56,78,.28),0 0 22px var(--wc-glow)
+}
+.wc-art-note{
+  max-width:138px;color:rgba(255,255,255,.92);font-size:11px;line-height:1.25;
+  font-weight:900;letter-spacing:.05em;text-align:center;text-transform:uppercase
+}
+.wc-art-note small{
+  display:block;margin-top:4px;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.67)
+}
+
 </style>
 </head>
 <body>
@@ -2818,34 +2888,9 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
     <div class="wc-final">
 
-      <div class="wc-anime-shake" aria-hidden="true">
-        <svg viewBox="0 0 180 220">
-          <g>
-            <path class="drink ol" d="M50 83 L132 83 L120 194 Q118 205 106 207 L75 207 Q62 205 60 194 Z"/>
-            <path class="drink-soft" d="M62 90 L120 90 L111 191 Q110 196 103 198 L79 198 Q71 197 70 190 Z"/>
-            <path d="M78 92 C83 114 80 142 73 167 C84 151 93 136 98 111 C101 97 104 92 108 90 Z" fill="#fff" opacity=".34"/>
-            <path d="M101 94 C111 117 109 145 102 171 C113 155 121 139 124 113 L126 94 Z" fill="#54657a" opacity=".09"/>
-            <ellipse cx="91" cy="83" rx="42" ry="13" class="glass ol"/>
-            <ellipse cx="91" cy="81" rx="35" ry="9" class="drink-soft ol2"/>
-          </g>
-          <g>
-            <path class="creamfill ol" d="M54 82 C50 72 59 66 69 66 C66 56 76 49 87 52 C88 39 103 36 111 44 C123 40 132 51 128 62 C141 63 145 76 136 84 Z"/>
-            <path d="M71 64 C82 61 94 62 103 66" fill="none" class="ol2"/>
-            <path d="M84 52 C94 52 106 55 114 61" fill="none" class="ol2"/>
-            <circle cx="92" cy="43" r="9" class="cherryfill ol2"/>
-            <path d="M98 38 C103 31 110 29 116 31" fill="none" stroke="#6d936f" stroke-width="4" stroke-linecap="round"/>
-            <path d="M62 68 l-8 -11" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-          </g>
-          <g>
-            <path d="M118 14 L101 70" fill="none" stroke="#425c72" stroke-width="9" stroke-linecap="round"/>
-            <path d="M118 14 L101 70" fill="none" stroke="#f4b5cf" stroke-width="5" stroke-linecap="round" stroke-dasharray="9 8"/>
-          </g>
-          <g class="shine-star">
-            <path d="M30 52 l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" class="shine"/>
-            <path d="M146 103 l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" class="shine"/>
-            <circle cx="144" cy="62" r="5" class="shine"/>
-          </g>
-        </svg>
+      <div class="wc-art-placeholder" aria-label="Milkshake artwork to be added">
+        <div class="wc-art-question">?</div>
+        <div class="wc-art-note">Milkshake art to be added<small>final artwork coming soon ♡</small></div>
       </div>
       <div class="wc-stars" id="wcStars"></div>
       <div class="wc-name" id="wcName"></div>
@@ -3675,7 +3720,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     scene.style.setProperty("--wc-accent",theme.accent);
     scene.style.setProperty("--wc-soft",theme.soft);
     scene.style.setProperty("--wc-glow",theme.glow);
-    scene.className="whisk-cinema show"+(tier.stars===4?" r4":tier.stars>=5?" r5":"");
+    scene.className="whisk-cinema show phase-ticket"+(tier.stars===4?" r4":tier.stars>=5?" r5":"");
     scene.setAttribute("aria-hidden","false");
 
     var ticket=document.getElementById("wcTicket");
@@ -3689,6 +3734,11 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     var whiskPanel=document.getElementById("wcWhiskPanel");
     var continueBtn=document.getElementById("wcContinue");
     var continueResolver=null;
+
+    function wcSetPhase(name){
+      scene.classList.remove("phase-ticket","phase-whisk","phase-blender","phase-reveal");
+      scene.classList.add("phase-"+name);
+    }
 
     ticket.className="wc-ticket";
     machine.className="wc-machine";
@@ -3719,15 +3769,16 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
         continueResolver=null;
         resolveContinue();
       }
-      scene.classList.remove("show","waiting","whisking","blender-phase","anime-blend","anime-impact","anime-reveal","flash","served","cream","sparkle");
+      scene.classList.remove("show","waiting","whisking","blender-phase","anime-blend","anime-impact","anime-reveal","flash","served","cream","sparkle","phase-ticket","phase-whisk","phase-blender","phase-reveal");
       scene.setAttribute("aria-hidden","true");
     }
     skip.onclick=finish;
 
     ticket.classList.add("show");
-    await wcWait(850);
+    await wcWait(1250);
     if(finished) return;
 
+    wcSetPhase("whisk");
     if(whiskPanel){
       whiskPanel.classList.add("show");
       scene.classList.add("whisking");
@@ -3741,6 +3792,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     }
 
     scene.classList.remove("anime-impact");
+    wcSetPhase("blender");
     scene.classList.add("blender-phase");
     machine.classList.add("show");
     await wcWait(460);
@@ -3771,6 +3823,8 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     await wcWait(300);
     if(finished) return;
 
+    scene.classList.remove("blender-phase","anime-blend","anime-impact","flash");
+    wcSetPhase("reveal");
     scene.classList.add("served","anime-reveal");
     await wcWait(430);
     if(finished) return;
