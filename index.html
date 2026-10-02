@@ -1284,6 +1284,134 @@ body{
   .whisk-cinema *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+
+/* Anime-style staging pass: keep the order ticket readable and turn the blend into a 2D cut-in. */
+.wc-ticket{
+  left:22px;top:50%;width:252px;z-index:20;
+  transform:translate(-38px,-50%) rotate(-3deg) scale(.94);
+  border:3px solid #6d4056;
+  box-shadow:7px 8px 0 rgba(44,62,79,.30),0 18px 44px rgba(16,29,44,.22);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.72) 0 13%,transparent 13% 100%),
+    linear-gradient(180deg,#fffafd,#f8dfea);
+}
+.wc-ticket.show{animation:wcTicketAnimeIn .62s cubic-bezier(.16,.84,.22,1.12) forwards}
+.wc-ticket-head{font-size:19px;text-shadow:2px 2px 0 rgba(242,184,210,.48)}
+.wc-ticket-order{border:2px solid rgba(165,79,120,.18);border-radius:9px;padding:7px 8px;margin-top:9px;background:#fff4f8}
+.wc-machine{margin-left:190px;z-index:8;filter:drop-shadow(7px 9px 0 rgba(35,55,74,.28))}
+.wc-lid,.wc-base{border-width:4px;border-color:#3d5c76}
+.wc-jar{box-shadow:inset 0 0 0 4px #466983,inset 0 0 0 7px rgba(255,255,255,.22)}
+.wc-final{left:60%;z-index:12}
+.wc-tadaa{left:60%;font-size:32px;font-style:italic;-webkit-text-stroke:1px rgba(82,48,72,.36);text-shadow:3px 4px 0 rgba(91,62,87,.22),0 8px 24px rgba(35,20,39,.30)}
+.wc-rarity-halo{left:60%}
+.wc-cup{filter:drop-shadow(7px 8px 0 rgba(31,49,66,.24))}
+.wc-cup-body{border-width:4px;border-color:#405f78}
+.wc-cream span{border-color:#8f5473;border-width:3px}
+
+.wc-halftone,.wc-anime-lines,.wc-anime-burst{
+  position:absolute;inset:0;pointer-events:none
+}
+.wc-halftone{
+  z-index:1;opacity:.16;
+  background-image:radial-gradient(rgba(255,255,255,.72) 1.15px,transparent 1.3px);
+  background-size:15px 15px;
+  mask-image:linear-gradient(90deg,rgba(0,0,0,.8),transparent 45%,rgba(0,0,0,.75));
+}
+.wc-anime-lines{
+  z-index:3;inset:-30%;opacity:0;
+  background:repeating-conic-gradient(
+    from -4deg at 60% 51%,
+    transparent 0deg 2.6deg,
+    rgba(255,255,255,.28) 2.8deg 3.15deg,
+    transparent 3.35deg 6.2deg
+  );
+  transform:scale(1.08);
+}
+.whisk-cinema.anime-blend .wc-anime-lines{animation:wcAnimeLines .34s steps(2,end) infinite}
+.wc-anime-burst{
+  z-index:7;left:60%;top:51%;width:380px;height:380px;inset:auto;
+  transform:translate(-50%,-50%) scale(.15);opacity:0;border-radius:50%;
+  background:
+    repeating-conic-gradient(from 5deg,rgba(255,255,255,.96) 0 2deg,transparent 2deg 9deg),
+    radial-gradient(circle,rgba(255,255,255,.98) 0 12%,var(--wc-glow) 13% 25%,transparent 56%);
+}
+.whisk-cinema.anime-impact .wc-anime-burst{animation:wcAnimeBurst .56s cubic-bezier(.12,.75,.25,1) forwards}
+
+.wc-sfx{
+  position:absolute;z-index:18;right:8%;top:38%;opacity:0;
+  color:#fff;font-size:clamp(28px,4vw,48px);line-height:.9;font-weight:1000;font-style:italic;
+  letter-spacing:-.06em;transform:rotate(8deg) scale(.6);
+  -webkit-text-stroke:2px #4f6174;
+  text-shadow:5px 6px 0 rgba(231,140,179,.74),0 0 22px var(--wc-glow);
+  pointer-events:none
+}
+.whisk-cinema.anime-blend .wc-sfx{animation:wcSfxPop .42s steps(2,end) infinite alternate}
+.wc-anime-caption{
+  position:absolute;z-index:19;left:60%;top:22%;opacity:0;transform:translateX(-50%) scale(.55) rotate(-4deg);
+  color:#fff8fc;font-size:13px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;
+  padding:7px 12px;border:3px solid rgba(255,255,255,.9);border-radius:999px;
+  background:rgba(168,78,123,.72);box-shadow:4px 5px 0 rgba(45,57,73,.26)
+}
+.whisk-cinema.anime-reveal .wc-anime-caption{animation:wcAnimeCaption .48s cubic-bezier(.16,.82,.2,1.12) forwards}
+.whisk-cinema.anime-reveal .wc-final{filter:drop-shadow(0 0 24px var(--wc-glow))}
+.whisk-cinema.anime-reveal .wc-backdrop:after{
+  content:"";position:absolute;inset:0;opacity:.22;
+  background:
+    linear-gradient(125deg,transparent 0 42%,rgba(255,255,255,.5) 43% 44%,transparent 45%),
+    linear-gradient(55deg,transparent 0 53%,rgba(255,211,230,.45) 54% 55%,transparent 56%);
+  animation:wcAnimeSlash .65s ease-out both
+}
+
+@keyframes wcTicketAnimeIn{
+  0%{opacity:0;transform:translate(-58px,-50%) rotate(-8deg) scale(.84)}
+  68%{opacity:1;transform:translate(7px,-50%) rotate(-1deg) scale(1.03)}
+  100%{opacity:1;transform:translate(0,-50%) rotate(-3deg) scale(1)}
+}
+@keyframes wcAnimeLines{
+  0%{opacity:.16;transform:scale(1.03) rotate(0)}
+  100%{opacity:.52;transform:scale(1.13) rotate(.7deg)}
+}
+@keyframes wcAnimeBurst{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.08) rotate(0)}
+  30%{opacity:.96}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.7) rotate(18deg)}
+}
+@keyframes wcSfxPop{
+  from{opacity:.62;transform:rotate(7deg) scale(.88) translate(0,0)}
+  to{opacity:1;transform:rotate(10deg) scale(1.06) translate(3px,-3px)}
+}
+@keyframes wcAnimeCaption{
+  to{opacity:1;transform:translateX(-50%) scale(1) rotate(-2deg)}
+}
+@keyframes wcAnimeSlash{
+  from{opacity:0;transform:translateX(-8%)}
+  to{opacity:.25;transform:translateX(5%)}
+}
+
+@media(max-width:760px){
+  .wc-stage{height:90vh;min-height:640px}
+  .wc-ticket{
+    left:50%;top:10px;width:min(240px,calc(100vw - 96px));
+    transform:translate(-50%,-28px) rotate(-2deg) scale(.94);
+    padding:11px 14px 13px;
+  }
+  .wc-ticket.show{animation:wcTicketAnimeInMobile .58s cubic-bezier(.16,.84,.22,1.1) forwards}
+  .wc-ticket-head{font-size:16px}.wc-ticket-sub{margin-bottom:7px}
+  .wc-ticket-row{font-size:10px;padding:2px 0}.wc-ticket-order{font-size:10px;padding:5px 7px}
+  .wc-machine{margin-left:0;margin-top:190px;transform-origin:center}
+  .wc-final{left:50%;top:62%}
+  .wc-tadaa{left:50%;top:37%}
+  .wc-rarity-halo{left:50%;top:60%}
+  .wc-anime-burst{left:50%;top:60%}
+  .wc-sfx{right:5%;top:47%;font-size:30px}
+  .wc-anime-caption{left:50%;top:43%;font-size:10px}
+}
+@keyframes wcTicketAnimeInMobile{
+  0%{opacity:0;transform:translate(-50%,-34px) rotate(-6deg) scale(.86)}
+  72%{opacity:1;transform:translate(-50%,5px) rotate(1deg) scale(1.02)}
+  100%{opacity:1;transform:translate(-50%,0) rotate(-2deg) scale(1)}
+}
+
 </style>
 </head>
 <body>
@@ -1900,6 +2028,10 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
 <div class="whisk-cinema" id="whiskCinema" aria-hidden="true">
   <div class="wc-backdrop"></div>
+  <div class="wc-halftone"></div>
+  <div class="wc-anime-lines"></div>
+  <div class="wc-anime-burst"></div>
+  <div class="wc-sfx">WHIRRR!!</div>
   <button class="wc-skip" id="wcSkip" type="button">SKIP</button>
   <div class="wc-stage">
     <div class="wc-ticket" id="wcTicket">
@@ -1927,6 +2059,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
     <div class="wc-flash"></div>
     <div class="wc-tadaa">Tadaa! ♡</div>
+    <div class="wc-anime-caption">Shake ready! ♡</div>
 
     <div class="wc-final">
       <div class="wc-cup">
@@ -2819,17 +2952,19 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     await wcWait(560);
     if(finished) return;
 
+    scene.classList.add("anime-blend");
     machine.classList.add("blending");
     var blendTime=tier.stars>=5?1650:(tier.stars===4?1420:1120);
     await wcWait(blendTime);
     if(finished) return;
 
     machine.classList.remove("blending");
-    scene.classList.add("flash");
+    scene.classList.remove("anime-blend");
+    scene.classList.add("anime-impact","flash");
     await wcWait(300);
     if(finished) return;
 
-    scene.classList.add("served");
+    scene.classList.add("served","anime-reveal");
     await wcWait(430);
     if(finished) return;
 
