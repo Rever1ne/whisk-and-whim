@@ -3716,6 +3716,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     var theme=wcThemeForStars(tier.stars);
     var finished=false;
     var skip=document.getElementById("wcSkip");
+    var ticket=document.getElementById("wcTicket");
 
     scene.style.setProperty("--wc-accent",theme.accent);
     scene.style.setProperty("--wc-soft",theme.soft);
@@ -3723,132 +3724,23 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     scene.className="whisk-cinema show phase-ticket"+(tier.stars===4?" r4":tier.stars>=5?" r5":"");
     scene.setAttribute("aria-hidden","false");
 
-    var ticket=document.getElementById("wcTicket");
-    var machine=document.getElementById("wcMachine");
-    var liquid=document.getElementById("wcLiquid");
-    var power=document.getElementById("wcPower");
-    var i1=document.getElementById("wcI1");
-    var i2=document.getElementById("wcI2");
-    var i3=document.getElementById("wcI3");
-    var label=document.getElementById("wcLabel");
-    var whiskPanel=document.getElementById("wcWhiskPanel");
-    var continueBtn=document.getElementById("wcContinue");
-    var continueResolver=null;
-
-    function wcSetPhase(name){
-      scene.classList.remove("phase-ticket","phase-whisk","phase-blender","phase-reveal");
-      scene.classList.add("phase-"+name);
-    }
-
     ticket.className="wc-ticket";
-    machine.className="wc-machine";
-    liquid.className="wc-liquid";
-    power.className="wc-power";
-    i1.className="wc-ingredient wc-i1";
-    i2.className="wc-ingredient wc-i2";
-    i3.className="wc-ingredient wc-i3";
-    if(whiskPanel) whiskPanel.className="wc-whisk-panel";
-    if(continueBtn){
-      continueBtn.onclick=null;
-      continueBtn.disabled=false;
-    }
-
     document.getElementById("wcOrder").textContent="#"+String(Number(central.total_pulls || (profile ? profile.totalPulls+1 : 1))).padStart(3,"0");
     document.getElementById("wcKonling").textContent=(profile && profile.clientId ? profile.clientId+" · "+profile.name : "Konling");
     document.getElementById("wcPity").textContent=Number(central.pity != null ? central.pity : (profile ? profile.pity : 0))+" / "+GUARANTEE_AFTER_MISSES;
     document.getElementById("wcStars").textContent=stars(tier.stars);
     document.getElementById("wcName").textContent=shake[0];
-    label.textContent=central.duplicate ? "DUPLICATE · +"+Number(central.syrup_earned||tier.syrup)+" SYRUP" : (central.guaranteed ? "GUARANTEED · NEW SERVE" : "FRESH SERVE");
-    label.className="wc-label"+(central.duplicate?" dupe":"");
 
     function finish(){
       if(finished) return;
       finished=true;
-      if(continueResolver){
-        var resolveContinue=continueResolver;
-        continueResolver=null;
-        resolveContinue();
-      }
-      scene.classList.remove("show","waiting","whisking","blender-phase","anime-blend","anime-impact","anime-reveal","flash","served","cream","sparkle","phase-ticket","phase-whisk","phase-blender","phase-reveal");
+      scene.classList.remove("show","phase-ticket");
       scene.setAttribute("aria-hidden","true");
     }
-    skip.onclick=finish;
 
+    skip.onclick=finish;
     ticket.classList.add("show");
     await wcWait(1250);
-    if(finished) return;
-
-    wcSetPhase("whisk");
-    if(whiskPanel){
-      whiskPanel.classList.add("show");
-      scene.classList.add("whisking");
-      await wcWait(tier.stars>=4?1750:1500);
-      if(finished) return;
-      scene.classList.remove("whisking");
-      whiskPanel.classList.add("out");
-      scene.classList.add("anime-impact");
-      await wcWait(360);
-      if(finished) return;
-    }
-
-    scene.classList.remove("anime-impact");
-    wcSetPhase("blender");
-    scene.classList.add("blender-phase");
-    machine.classList.add("show");
-    await wcWait(460);
-    if(finished) return;
-
-    i1.classList.add("drop");
-    await wcWait(120);
-    i2.classList.add("drop");
-    await wcWait(120);
-    i3.classList.add("drop");
-    await wcWait(520);
-    if(finished) return;
-
-    liquid.classList.add("fill");
-    power.classList.add("live");
-    await wcWait(560);
-    if(finished) return;
-
-    scene.classList.add("anime-blend");
-    machine.classList.add("blending");
-    var blendTime=tier.stars>=5?1650:(tier.stars===4?1420:1120);
-    await wcWait(blendTime);
-    if(finished) return;
-
-    machine.classList.remove("blending");
-    scene.classList.remove("anime-blend");
-    scene.classList.add("anime-impact","flash");
-    await wcWait(300);
-    if(finished) return;
-
-    scene.classList.remove("blender-phase","anime-blend","anime-impact","flash");
-    wcSetPhase("reveal");
-    scene.classList.add("served","anime-reveal");
-    await wcWait(430);
-    if(finished) return;
-
-    scene.classList.add("cream","sparkle");
-    await wcWait(tier.stars>=5?1750:(tier.stars===4?1450:1250));
-    if(finished) return;
-
-    scene.classList.add("waiting");
-    if(continueBtn){
-      await new Promise(function(resolve){
-        continueResolver=resolve;
-        continueBtn.onclick=function(){
-          continueBtn.disabled=true;
-          if(continueResolver){
-            var done=continueResolver;
-            continueResolver=null;
-            done();
-          }
-        };
-      });
-      if(finished) return;
-    }
-
     finish();
     await wcWait(210);
   }
@@ -3944,7 +3836,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     }
 
     centerCap.innerHTML = "SPINNING<span>GOOD LUCK</span>";
-    subcontrol.textContent = phase === "rarity" ? "Finding your rarity…" : "Blending your shake…";
+    subcontrol.textContent = phase === "rarity" ? "Finding your rarity…" : "Finding your milkshake…";
     var duration = phase === "rarity" ? 5600 : (selectedTier && selectedTier.stars === 4 ? 7000 : 6000);
     await animateTo(index,duration);
 
