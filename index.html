@@ -2541,7 +2541,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       <section class="card">
         <h3>Permanent rarity rates</h3>
         <div class="rates" id="rates"></div>
-        <p class="note" style="margin:14px 0 0">The rarity result is selected securely on the server using a <strong>cryptographic random generator</strong>, then the wheel animates to the already-selected result.</p>
+        
       </section>
 
       <section class="card">
@@ -3188,7 +3188,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
         ["Snowpaw Vanilla","Creamy ivory vanilla shake with a fluffy whipped-cream dome, tiny white sugar pearls, and a pale blue straw.","10% off 1 game order"],
         ["Berrytail Ribbon","Pastel pink with strawberry syrup spiraling around the glass, whipped cream, a strawberry slice, and thin pink drizzle.","Custom 15-second voice note"],
         ["Cookiepaw Cream","Light grey-white cookies-and-cream shake with cookie crumbs, whipped cream, a mini sandwich cookie, and cookie dust.","One round of trivia of your choice"],
-        ["Peachpaw Cloud","Pale peach shake with glossy honey drizzle, small peach cubes, whipped cream, and a tiny golden star.","10% off 1 15-minute E-Chat order"],
+        ["Peachpaw Cloud","Pale peach shake with glossy honey drizzle, small peach cubes, whipped cream, and a tiny golden star.","10% off 1 service of your choice"],
         ["Foxy Cocoa Swirl","Rich chocolate shake with silky fudge swirls, a fluffy whipped-cream crown, brownie crumbles, and a drizzle of glossy chocolate sauce.","10% off one Watch Together order"]
       ]
     },
@@ -3198,7 +3198,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
         ["Bluefluff Velvet","Lavender-blue shake with deeper blueberry swirls, whipped cream, blueberries, and shimmering sugar.","Custom 30-second voice note (optional SFX)"],
         ["Minty Fox Soda","Pastel melon-green shake fading into cream, topped with whipped cream, a melon ball, sugar bubbles, and striped straw.","20% off one game order"],
         ["Sakura Foxwish","Soft sakura-pink shake with a creamy white swirl, whipped cream, delicate cherry-blossom petals, and a glossy pink syrup finish.","1 free episode of a series OR anime of your choice"],
-        ["Caramel Pawprint","Cream-and-caramel shake with a caramel streak, whipped cream, crunchy caramel pieces, and a star-shaped biscuit.","One 15-minute E-Chat"]
+        ["Caramel Pawprint","Cream-and-caramel shake with a caramel streak, whipped cream, crunchy caramel pieces, and a star-shaped biscuit.","1 sub-album picture"]
       ]
     },
     {
@@ -3219,7 +3219,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     {
       key:"secret",stars:5,label:"Secret",weight:2,color:"#ef91a9",syrup:10,
       shakes:[
-        ["Konkon Dreams","Luminous white shake with icy-blue and pale mint swirls, whipped cream, silver sugar stars, a blue star, and fox-ear chocolate.","Cover recording + 2 game orders of your choice, OR a custom 5-minute script with optional SFX + 1-hour E-Chat"]
+        ["Konkon Dreams","Luminous white shake with icy-blue and pale mint swirls, whipped cream, silver sugar stars, a blue star, and fox-ear chocolate.","Choose ONE: Cover recording + 2 game orders of your choice OR a custom 5-minute script with optional SFX. PLUS 3 hours of Spend the Day with Me (service name/details TBA)."]
       ]
     }
   ];
@@ -3490,7 +3490,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     sessionKonlingName.textContent=profile.name;
     sessionLoginName.textContent=(profile.loginUsername?"@"+profile.loginUsername+" · ":"")+profile.clientId;
     clientIdStat.textContent=profile.clientId||"—";
-    assignedStat.textContent=profile.totalAssigned||0;
+    assignedStat.textContent=available;
     usedStat.textContent=profile.totalUsed||0;
     availableStat.textContent=available;
     uniqueStat.textContent=uniques+" / 15";
@@ -3874,7 +3874,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
           return;
         }
         subcontrol.textContent=/no milkshakes available/i.test(pullError)
-          ? "No milkshakes available. Ask Revie to assign more."
+          ? "No milkshakes available."
           : "Could not use this milkshake. Nothing extra was counted. Please try again.";
         spinning=false;
         spinBtn.disabled=false;
