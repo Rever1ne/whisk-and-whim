@@ -33,7 +33,18 @@ body{
 }
 button,input{font:inherit}
 button{cursor:pointer}
-.app{width:min(1380px,100%);margin:0 auto;padding:28px 22px 56px}
+@media (min-width:1650px){
+  body::before,body::after{
+    content:"";position:fixed;top:16vh;bottom:6vh;width:clamp(110px,8vw,170px);
+    z-index:0;pointer-events:none;opacity:.96;
+    background-image:url("./creature-side-decor.svg");background-repeat:repeat-y;
+    background-position:center top;background-size:230px auto;
+    filter:drop-shadow(0 7px 10px rgba(74,140,255,.10));
+  }
+  body::before{left:8px}
+  body::after{right:8px;transform:scaleX(-1)}
+}
+.app{position:relative;z-index:1;width:min(1380px,100%);margin:0 auto;padding:28px 22px 56px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:30px}
 .brand{display:flex;align-items:center;gap:12px}
 .brand-icon{
