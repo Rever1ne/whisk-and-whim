@@ -1995,6 +1995,38 @@ body{
     70% { opacity: 1; transform: translate(-50%, calc(-50% - 5px)) scale(1.02) rotate(.6deg); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
   }
+  .syrup-rewards { margin-top: 18px; padding: 18px 20px 14px; border: 1px solid rgba(117,74,97,.18); border-radius: 18px; background: linear-gradient(135deg, rgba(255,248,252,.96), rgba(250,239,248,.9)); box-shadow: 0 8px 22px rgba(78,43,65,.07); }
+  .syrup-rewards-head { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:24px; }
+  .syrup-rewards-head h3 { margin:0; color:#5f3d51; font-size:18px; }
+  .syrup-rewards-head p { margin:4px 0 0; color:#806a78; font-size:13px; }
+  .syrup-rewards-head strong { flex-shrink:0; color:#78435f; font-size:14px; }
+  .syrup-progress { position:relative; padding:0 2px 8px; }
+  .syrup-track { height:10px; margin:0 8px; border-radius:999px; background:#e9dbe5; overflow:hidden; box-shadow:inset 0 1px 3px rgba(57,33,49,.1); }
+  .syrup-track span { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#e28db3,#c86d98,#986184); transition:width .35s ease; }
+  .syrup-milestones { position:relative; height:102px; margin-top:-17px; }
+  .syrup-milestone { position:absolute; top:0; z-index:1; display:flex; flex-direction:column; width:32%; min-height:100px; padding:0 7px 8px; border:0; background:transparent; color:#6f5062; font:inherit; cursor:pointer; }
+  .syrup-milestone.milestone-30 { left:30%; align-items:center; text-align:right; transform:translateX(-50%); }
+  .syrup-milestone.milestone-60 { left:60%; align-items:center; text-align:left; transform:translateX(-50%); }
+  .syrup-milestone.milestone-100 { left:100%; align-items:flex-end; text-align:right; transform:translateX(-100%); }
+  .milestone-30 .syrup-milestone-label { align-self:flex-end; }
+  .milestone-60 .syrup-milestone-label { align-self:flex-start; }
+  .milestone-100 .syrup-milestone-label, .milestone-100 .syrup-milestone-reward { align-self:flex-end; }
+  .syrup-milestone-point { display:grid; place-items:center; width:34px; height:34px; border:3px solid #d9c3d1; border-radius:50%; background:#fff9fc; color:#79546c; font-size:12px; font-weight:900; box-shadow:0 2px 6px rgba(63,37,53,.11); }
+  .syrup-milestone-label { margin-top:7px; font-size:12px; font-weight:900; }
+  .syrup-milestone-reward { display:block; max-width:230px; margin-top:4px; color:#775d6d; font-size:11px; line-height:1.35; }
+  .syrup-milestone:hover .syrup-milestone-point, .syrup-milestone:focus-visible .syrup-milestone-point { border-color:#b2628a; transform:translateY(-1px); }
+  .syrup-milestone:focus-visible { outline:2px solid #397eb8; outline-offset:3px; border-radius:12px; }
+  .syrup-milestone.is-ready .syrup-milestone-point { border-color:#bb6f96; background:#f7dce9; color:#653650; }
+  .syrup-milestone.milestone-100 .syrup-milestone-point { border-color:#d0a75e; color:#815d1d; }
+  .syrup-reward-status { min-height:18px; margin:5px 0 0; color:#806a78; font-size:12px; text-align:center; }
+  @media (max-width:640px) {
+    .syrup-rewards { padding:15px 12px 11px; }
+    .syrup-rewards-head { margin-bottom:21px; }
+    .syrup-milestone { width:34%; padding-left:2px; padding-right:2px; }
+    .syrup-milestone-reward { font-size:10px; }
+    .syrup-rewards-head h3 { font-size:16px; }
+    .syrup-rewards-head p { font-size:11px; }
+  }
 </style>
 </head>
 <body>
@@ -2161,10 +2193,31 @@ body{
               <div class="customer-stat"><b id="usedStat">0</b><span>Total used</span></div>
               <div class="customer-stat"><b id="availableStat">0</b><span>Available</span></div>
               <div class="customer-stat"><b id="uniqueStat">0 / 15</b><span>Collection</span></div>
-              <div class="customer-stat"><b id="syrupStat">0</b><span>Syrup drops</span></div>
+              <div class="customer-stat"><b id="syrupStat">0</b><span>Syrup earned</span></div>
               <div class="customer-stat"><b id="pityStat">0 / 4</b><span>Current pity</span></div>
             </div>
             <div class="account-zero" id="accountZeroNotice" style="display:none">You have no milkshakes available right now. The wheel stays visible, but spinning is disabled until you order more milkshakes.</div>
+            <section class="syrup-rewards" aria-labelledby="syrupRewardsTitle">
+              <div class="syrup-rewards-head">
+                <div><h3 id="syrupRewardsTitle">Syrup rewards</h3><p>Duplicate pulls add syrup to your reward bar.</p></div>
+                <strong id="syrupBalanceLabel">0 / 100 syrup</strong>
+              </div>
+              <div class="syrup-progress" role="progressbar" aria-label="Syrup reward progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div class="syrup-track"><span id="syrupBarFill"></span></div>
+                <div class="syrup-milestones">
+                  <button class="syrup-milestone milestone-30" type="button" data-syrup-milestone="30" aria-label="30 syrup milestone; reward to be announced">
+                    <span class="syrup-milestone-point">30</span><span class="syrup-milestone-label">30 syrup</span><span class="syrup-milestone-reward" aria-hidden="true"></span>
+                  </button>
+                  <button class="syrup-milestone milestone-60" type="button" data-syrup-milestone="60" aria-label="60 syrup milestone; reward to be announced">
+                    <span class="syrup-milestone-point">60</span><span class="syrup-milestone-label">60 syrup</span><span class="syrup-milestone-reward" aria-hidden="true"></span>
+                  </button>
+                  <button class="syrup-milestone milestone-100" type="button" data-syrup-milestone="100" aria-label="Redeem 100 syrup for Spend a Day with Me">
+                    <span class="syrup-milestone-point">100</span><span class="syrup-milestone-label">100 syrup</span><span class="syrup-milestone-reward">8 hours of Spend a Day with Me, arranged in advance for Friday, Saturday, or Sunday.</span>
+                  </button>
+                </div>
+              </div>
+              <p class="syrup-reward-status" id="syrupRewardStatus" aria-live="polite">Collect syrup from duplicate pulls to fill the bar.</p>
+            </section>
           </div>
         </div>
 
@@ -3332,6 +3385,12 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
   var availableStat = document.getElementById("availableStat");
   var uniqueStat = document.getElementById("uniqueStat");
   var syrupStat = document.getElementById("syrupStat");
+  var syrupBalanceLabel = document.getElementById("syrupBalanceLabel");
+  var syrupBarFill = document.getElementById("syrupBarFill");
+  var syrupProgress = document.querySelector(".syrup-progress");
+  var syrupRewardStatus = document.getElementById("syrupRewardStatus");
+  var syrupMilestoneButtons = Array.from(document.querySelectorAll("[data-syrup-milestone]"));
+  var syrupRedemptionBusy = false;
   var pityStat = document.getElementById("pityStat");
   var accountZeroNotice = document.getElementById("accountZeroNotice");
     var guaranteeBox = document.getElementById("guaranteeBox");
@@ -3374,6 +3433,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     if(typeof profile.pity !== "number") profile.pity = 0;
     if(typeof profile.totalPulls !== "number") profile.totalPulls = 0;
     if(typeof profile.syrupDrops !== "number") profile.syrupDrops = 0;
+    if(typeof profile.syrupBalance !== "number") profile.syrupBalance = profile.syrupDrops;
     if(typeof profile.milkshakesAvailable !== "number") profile.milkshakesAvailable = 0;
     if(typeof profile.totalUsed !== "number") profile.totalUsed = 0;
     if(!Array.isArray(profile.history)) profile.history = [];
@@ -3405,7 +3465,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     });
   }
 
-  function applyCustomerState(state,historyRows){
+  function applyCustomerState(state,historyRows,syrupBalance){
     var profile=ensureProfileShape(customers.session||{history:[]});
     profile.name=state.username;
     profile.clientId=state.konling_id;
@@ -3413,6 +3473,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     profile.pity=Number(state.pity||0);
     profile.totalPulls=Number(state.total_pulls||0);
     profile.syrupDrops=Number(state.syrup_drops||0);
+    profile.syrupBalance=(typeof syrupBalance==="number"&&Number.isFinite(syrupBalance))?syrupBalance:profile.syrupDrops;
     profile.uniqueShakes=Number(state.unique_shakes||0);
     profile.milkshakesAvailable=Number(state.milkshakes_available||0);
     profile.totalUsed=Number(state.total_used||0);
@@ -3442,20 +3503,22 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     try{
       results=await Promise.all([
         centralClient.rpc("get_customer_state",{p_session_token:customerSessionToken}),
-        centralClient.rpc("get_customer_history",{p_session_token:customerSessionToken})
+        centralClient.rpc("get_customer_history",{p_session_token:customerSessionToken}),
+        centralClient.rpc("get_customer_syrup_balance",{p_session_token:customerSessionToken})
       ]);
     }catch(e){
       if(showError)customerLoginStatus.textContent="Could not refresh your account right now.";
       return false;
     }
-    var stateRes=results[0],historyRes=results[1];
+    var stateRes=results[0],historyRes=results[1],balanceRes=results[2];
     if(stateRes.error||!stateRes.data||!stateRes.data.length){
       var msg=stateRes.error?stateRes.error.message:"Session expired. Please log in again.";
       if(/session expired|no longer exists/i.test(msg)){clearCustomerSession(msg);return false;}
       if(showError)customerLoginStatus.textContent=msg;
       return false;
     }
-    applyCustomerState(stateRes.data[0],historyRes.error?null:historyRes.data);
+    var balanceValue=balanceRes&&!balanceRes.error&&balanceRes.data!==null?Number(balanceRes.data):null;
+    applyCustomerState(stateRes.data[0],historyRes.error?null:historyRes.data,balanceValue);
     renderCustomerState();
     var revealOpen=document.getElementById("revealBack").classList.contains("show");
     if(!spinning && phase==="rarity" && !pendingCentralPull && !revealOpen) resetPull();
@@ -3565,6 +3628,15 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     availableStat.textContent=available;
     uniqueStat.textContent=uniques+" / 15";
     syrupStat.textContent=profile.syrupDrops||0;
+    var syrupBalance=Math.max(0,Number(profile.syrupBalance||0));
+    syrupBalanceLabel.textContent=syrupBalance+" / 100 syrup";
+    syrupBarFill.style.width=Math.min(syrupBalance,100)+"%";
+    syrupProgress.setAttribute("aria-valuenow",String(Math.min(syrupBalance,100)));
+    syrupMilestoneButtons.forEach(function(button){
+      var milestone=Number(button.getAttribute("data-syrup-milestone"));
+      button.classList.toggle("is-ready",syrupBalance>=milestone);
+      button.disabled=(milestone===100&&(syrupBalance<100||syrupRedemptionBusy));
+    });
     pityStat.textContent=misses+" / "+GUARANTEE_AFTER_MISSES;
     accountZeroNotice.style.display=available<=0?"block":"none";
 
@@ -3593,7 +3665,46 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     renderHistory();
   }
 
-    function stars(n){ return "★".repeat(n); }
+    async function handleSyrupMilestone(event){
+    var button=event.currentTarget;
+    var milestone=Number(button.getAttribute("data-syrup-milestone"));
+    if(milestone!==100){
+      syrupRewardStatus.textContent="This milestone’s reward is still being planned.";
+      return;
+    }
+    if(!customerSessionToken||!centralClient){
+      syrupRewardStatus.textContent="Log in to redeem syrup rewards.";
+      return;
+    }
+    var profile=ensureProfileShape(getActiveProfile());
+    var balance=Math.max(0,Number(profile&&profile.syrupBalance||0));
+    if(balance<100){
+      syrupRewardStatus.textContent="You need "+(100-balance)+" more syrup to redeem this reward.";
+      return;
+    }
+    var offer="Spend a Day with Me: 8 hours, arranged in advance for a weekend day (Friday, Saturday, or Sunday).";
+    if(!window.confirm("Redeem 100 syrup for "+offer))return;
+    syrupRedemptionBusy=true;
+    renderCustomerState();
+    syrupRewardStatus.textContent="Redeeming your reward…";
+    var result;
+    try{
+      result=await centralClient.rpc("redeem_customer_syrup_reward",{p_session_token:customerSessionToken});
+    }catch(error){result={error:error};}
+    syrupRedemptionBusy=false;
+    if(result.error||!result.data||!result.data.length){
+      syrupRewardStatus.textContent=result.error?result.error.message:"Could not redeem this reward. Please try again.";
+      renderCustomerState();
+      return;
+    }
+    var claimedProfile=ensureProfileShape(getActiveProfile());
+    if(claimedProfile)claimedProfile.syrupBalance=Number(result.data[0].syrup_balance||0);
+    await syncActiveProfileFromCentral(false);
+    syrupRewardStatus.textContent="Redeemed! Your 8-hour Spend a Day with Me reward has been recorded. Arrange a Friday, Saturday, or Sunday in advance.";
+    renderCustomerState();
+  }
+
+  function stars(n){ return "★".repeat(n); }
 
   function secureRandom(){
     var a = new Uint32Array(1);
@@ -4266,6 +4377,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
   }
 
   spinBtn.addEventListener("click",spin);
+  syrupMilestoneButtons.forEach(function(button){button.addEventListener("click",handleSyrupMilestone);});
   canvas.addEventListener("click",function(){if(!spinning)spin();});
   document.getElementById("nextPull").addEventListener("click",resetPull);
   customerLoginBtn.addEventListener("click",loginCustomer);
