@@ -739,7 +739,7 @@ body{
     0 42px 120px rgba(20,39,67,.56);
 }
 .reveal-back.konkon-dreams .reveal:before{
-  content:"SECRET ★★★★★";
+  content:"HEAVENLY DELICIOUS";
   position:absolute;
   top:-17px;
   left:50%;
@@ -2600,7 +2600,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
           <button class="guarantee-reset" id="restartGuarantee" disabled style="display:none">Restart</button>
         </div>
         <div class="guarantee-track"><div class="guarantee-fill" id="guaranteeFill"></div></div>
-        <div class="guarantee-rule">A natural ★★★, ★★★★ or ★★★★★ pull resets the counter immediately. A guaranteed ★★★+ pull resets it after the pull is completed.</div>
+        <div class="guarantee-rule">A natural Extra Delicious, Super Delicious or Heavenly Delicious pull resets the counter immediately. A guaranteed Extra Delicious+ pull resets it after the pull is completed.</div>
       </div>
 
       <div class="controls">
@@ -2652,7 +2652,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     <div class="detail-summary">
       <div class="summary-pill"><b>15</b><span>Permanent shakes</span></div>
       <div class="summary-pill"><b>5</b><span>Rarity tiers</span></div>
-      <div class="summary-pill"><b>5th</b><span>★★★+ guarantee</span></div>
+      <div class="summary-pill"><b>5th</b><span>Extra Delicious+ guarantee</span></div>
       <div class="summary-pill"><b>1–10</b><span>Syrup per duplicate</span></div>
     </div>
 
@@ -2661,8 +2661,8 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       <div class="detail-steps">
         <div><b>1</b><span>Choose your <strong>Konling username</strong> so your progress is kept separate.</span></div>
         <div><b>2</b><span>Spin the rarity wheel using the published permanent rates.</span></div>
-        <div><b>3</b><span>The matching milkshake wheel opens automatically for ★–★★★★. A ★★★★★ pull reveals Konkon Dreams immediately.</span></div>
-        <div><b>4</b><span>For ★–★★★★, spin again. Every milkshake inside the selected rarity has an equal chance.</span></div>
+        <div><b>3</b><span>The matching milkshake wheel opens automatically for Tasty through Super Delicious. A Heavenly Delicious pull reveals Konkon Dreams immediately.</span></div>
+        <div><b>4</b><span>For Tasty through Super Delicious, spin again. Every milkshake inside the selected rarity has an equal chance.</span></div>
       </div>
     </section>
 
@@ -2672,13 +2672,13 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     </section>
 
     <section class="detail-section guarantee-detail">
-      <div class="detail-section-title"><span>03</span><div><b>★★★+ guarantee</b><small>Your low-rarity streak can never go past four.</small></div></div>
+      <div class="detail-section-title"><span>03</span><div><b>Extra Delicious+ guarantee</b><small>Your low-rarity streak can never go past four.</small></div></div>
       <div class="guarantee-callout">
-        <b>After 4 consecutive ★ / ★★ pulls, your next rarity pull is guaranteed to be ★★★ or higher.</b>
-        <p>A natural ★★★, ★★★★ or ★★★★★ pull resets the counter immediately. A guaranteed ★★★+ pull also resets it after the pull is completed.</p>
+        <b>After 4 consecutive Tasty or Delicious pulls, your next rarity pull is guaranteed to be Extra Delicious or higher.</b>
+        <p>A natural Extra Delicious, Super Delicious or Heavenly Delicious pull resets the counter immediately. A guaranteed Extra Delicious+ pull also resets it after the pull is completed.</p>
       </div>
       <div class="guarantee-rates" id="guaranteeRates"></div>
-      <p class="detail-footnote">On a guaranteed pull, the rarity wheel itself changes to show only ★★★ / ★★★★ / ★★★★★. Their normal weights are rebalanced across those three tiers.</p>
+      <p class="detail-footnote">On a guaranteed pull, the rarity wheel itself changes to show only Extra Delicious, Super Delicious and Heavenly Delicious. Their normal weights are rebalanced across those three tiers.</p>
     </section>
 
     <section class="detail-section">
@@ -3256,7 +3256,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
   var tiers = [
     {
-      key:"common",stars:1,label:"Common",weight:50.5,color:"#8fe3bd",syrup:1,
+      key:"common",stars:1,label:"Tasty",weight:50.5,color:"#8fe3bd",syrup:1,
       shakes:[
         ["Snowpaw Vanilla","Creamy ivory vanilla shake with a fluffy whipped-cream dome, tiny white sugar pearls, and a pale blue straw.","10% off 1 game order"],
         ["Berrytail Ribbon","Pastel pink with strawberry syrup spiraling around the glass, whipped cream, a strawberry slice, and thin pink drizzle.","Custom 15-second voice note"],
@@ -3266,7 +3266,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       ]
     },
     {
-      key:"uncommon",stars:2,label:"Uncommon",weight:21,color:"#ffd66f",syrup:2,
+      key:"uncommon",stars:2,label:"Delicious",weight:21,color:"#ffd66f",syrup:2,
       shakes:[
         ["Bluefluff Velvet","Lavender-blue shake with deeper blueberry swirls, whipped cream, blueberries, and shimmering sugar.","Custom 30-second voice note (optional SFX)"],
         ["Minty Fox Soda","Pastel melon-green shake fading into cream, topped with whipped cream, a melon ball, sugar bubbles, and striped straw.","20% off one game order"],
@@ -3275,7 +3275,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       ]
     },
     {
-      key:"rare",stars:3,label:"Rare",weight:17,color:"#73b8f4",syrup:3,
+      key:"rare",stars:3,label:"Extra Delicious",weight:17,color:"#73b8f4",syrup:3,
       shakes:[
         ["Konberry Paws","Berry-pink shake with a creamy raspberry swirl, whipped cream, mixed berries, and tiny paw-print chocolates tucked on top.","1 game order of your choice + 1 Challenge Wheel spin"],
         ["Frostpaw Matcha","Icy white and cool green marbled shake with whipped cream, crystal-like sugar pieces, and a frosted transparent straw.","25% off 1 service of your choice"],
@@ -3283,14 +3283,14 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       ]
     },
     {
-      key:"super",stars:4,label:"Super Rare",weight:10,color:"#c792e7",syrup:5,
+      key:"super",stars:4,label:"Super Delicious",weight:10,color:"#c792e7",syrup:5,
       shakes:[
         ["Foxfire Fudge Rush","","One movie (up to 2 hours) OR episodes with the same total viewing time"],
         ["Moonfluff Parfait","Velvety deep-blue shake layered with pale cream, topped with whipped cream, glossy blueberries, and delicate white-chocolate curls.","3 sub-album pictures OR 45-minute E-Chat"]
       ]
     },
     {
-      key:"secret",stars:5,label:"Secret",weight:1.5,color:"#ef91a9",syrup:10,
+      key:"secret",stars:5,label:"Heavenly Delicious",weight:1.5,color:"#ef91a9",syrup:10,
       shakes:[
         ["Konkon Dreams","Luminous white shake with icy-blue and pale mint swirls, whipped cream, silver sugar stars, a blue star, and fox-ear chocolate.","Choose ONE: Cover recording + 2 game orders of your choice OR a custom 5-minute script with optional SFX. PLUS 3 hours of Spend the Day with Me (service name/details TBA)."]
       ]
@@ -3576,12 +3576,12 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
     if(misses>=GUARANTEE_AFTER_MISSES){
       guaranteeBox.classList.add("ready");
-      guaranteeTitle.textContent="Your next milkshake is guaranteed ★★★+!";
+      guaranteeTitle.textContent="Your next milkshake is guaranteed Extra Delicious+!";
       guaranteeSub.textContent="Guarantee ready · it resets after the guaranteed milkshake.";
     }else{
       guaranteeBox.classList.remove("ready");
       var remaining=GUARANTEE_AFTER_MISSES-misses;
-      guaranteeTitle.textContent=remaining+" milkshake"+(remaining===1?"":"s")+" until your ★★★+ guarantee!";
+      guaranteeTitle.textContent=remaining+" milkshake"+(remaining===1?"":"s")+" until your Extra Delicious+ guarantee!";
       guaranteeSub.textContent=misses+" / "+GUARANTEE_AFTER_MISSES+" low-rarity milkshakes toward guarantee.";
     }
 
@@ -3996,7 +3996,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       subcontrol.textContent = "Rarity locked. Loading its milkshake wheel…";
 
       if(selectedTier.stars === 5){
-        subcontrol.textContent = "★★★★★ SECRET! Konkon Dreams is breaking through…";
+        subcontrol.textContent = "HEAVENLY DELICIOUS! Konkon Dreams is breaking through…";
         setTimeout(async function(){
           var secretShake = selectedTier.shakes.find(function(s){
             return !pendingCentralPull || s[0] === pendingCentralPull.shake_name;
@@ -4153,11 +4153,11 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     var available=profile?Math.max(0,Number(profile.milkshakesAvailable||0)):0;
 
     if(guaranteeReady){
-      kicker.textContent="Guaranteed milkshake · ★★★+";
-      stageTitle.textContent="Your ★★★+ guarantee is ready!";
-      stageText.textContent="This rarity wheel now contains only ★★★, ★★★★ and ★★★★★.";
-      centerCap.innerHTML="★★★+<span>GUARANTEED</span>";
-      subcontrol.textContent="Guaranteed pool: ★★★ 60% · ★★★★ 30% · ★★★★★ 10%.";
+      kicker.textContent="Guaranteed milkshake · Extra Delicious+";
+      stageTitle.textContent="Your Extra Delicious+ guarantee is ready!";
+      stageText.textContent="This rarity wheel now contains only Extra Delicious, Super Delicious and Heavenly Delicious.";
+      centerCap.innerHTML="EXTRA DELICIOUS+<span>GUARANTEED</span>";
+      subcontrol.textContent="Guaranteed pool: Extra Delicious 60% · Super Delicious 30% · Heavenly Delicious 10%.";
     }else{
       kicker.textContent="First spin · rarity";
       stageTitle.textContent="Fox says... SPIN! kon kon~! ♡";
