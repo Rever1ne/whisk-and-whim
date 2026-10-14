@@ -130,6 +130,17 @@
   var loginStatus=document.getElementById("loginStatus"),adminStatus=document.getElementById("adminStatus");
   var allKonlings=[],allPulls=[],allAccounts=[],selected=null,client=null,lastCredential=null;
   var ADMIN_EMAIL="yuerinkyubi@gmail.com";
+  function displayRarity(value){
+    var labels={
+      "Common":"Tasty","Uncommon":"Delicious","Rare":"Extra Delicious",
+      "Super Rare":"Super Delicious","Secret":"Heavenly Delicious",
+      "★":"Tasty","★★":"Delicious","★★★":"Extra Delicious",
+      "★★★★":"Super Delicious","★★★★★":"Heavenly Delicious"
+    };
+    var key=String(value||"");
+    return labels[key]||key;
+  }
+
   var ADMIN_SESSION_KEY="whiskWhimAdminSessionStartedV1";
   var ADMIN_SESSION_MS=60*60*1000;
   var adminLogoutTimer=null;
@@ -346,7 +357,7 @@
       '<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end"><button class="btn danger" id="clearHistoryBtn" '+(pulls.length?'':'disabled')+'>Clear milkshake history</button><button class="btn danger" id="deleteKonlingBtn">Delete Konling permanently</button></div></div></div>'+
       '<div class="mini"><div><b>'+k.total_pulls+'</b><span>Milkshakes pulled</span></div><div><b>'+unique+' / 15</b><span>Collection</span></div><div><b>'+k.pity+' / 4</b><span>Pity</span></div><div><b>'+k.syrup_drops+'</b><span>Syrup</span></div></div>'+
       accountHtml+
-      '<div class="pulls">'+(pulls.length?pulls.map(function(p){return '<div class="pull"><b>'+"★".repeat(p.stars)+'</b><div><strong>'+esc(p.shake_name)+'</strong><br><small>'+esc(p.rarity)+' · '+new Date(p.created_at).toLocaleString()+'</small></div><span class="pill">'+(p.guaranteed?'GUARANTEED · ':'')+(p.duplicate?'DUPLICATE +'+p.syrup_earned:'NEW')+'</span></div>';}).join(""):'<div class="empty">No milkshakes used yet.</div>')+'</div>';
+      '<div class="pulls">'+(pulls.length?pulls.map(function(p){return '<div class="pull"><b>'+"★".repeat(p.stars)+'</b><div><strong>'+esc(p.shake_name)+'</strong><br><small>'+esc(displayRarity(p.rarity))+' · '+new Date(p.created_at).toLocaleString()+'</small></div><span class="pill">'+(p.guaranteed?'GUARANTEED · ':'')+(p.duplicate?'DUPLICATE +'+p.syrup_earned:'NEW')+'</span></div>';}).join(""):'<div class="empty">No milkshakes used yet.</div>')+'</div>';
 
     document.getElementById("clearHistoryBtn").onclick=clearSelectedHistory;
     document.getElementById("deleteKonlingBtn").onclick=deleteSelectedKonling;
