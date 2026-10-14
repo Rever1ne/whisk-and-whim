@@ -2090,7 +2090,7 @@ body{
               <div class="customer-stat"><b id="syrupStat">0</b><span>Syrup drops</span></div>
               <div class="customer-stat"><b id="pityStat">0 / 4</b><span>Current pity</span></div>
             </div>
-            <div class="account-zero" id="accountZeroNotice" style="display:none">You have no milkshakes available right now. The wheel stays visible, but spinning is disabled until Revie assigns more.</div>
+            <div class="account-zero" id="accountZeroNotice" style="display:none">You have no milkshakes available right now. The wheel stays visible, but spinning is disabled until you order more milkshakes.</div>
           </div>
         </div>
 
@@ -2541,7 +2541,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       <section class="card">
         <h3>Permanent rarity rates</h3>
         <div class="rates" id="rates"></div>
-        <p class="note" style="margin:14px 0 0">The rarity result is selected using the browser's <strong>cryptographic random generator</strong>, then the wheel animates to that result.</p>
+        <p class="note" style="margin:14px 0 0">The rarity result is selected securely on the server using a <strong>cryptographic random generator</strong>, then the wheel animates to the already-selected result.</p>
       </section>
 
       <section class="card">
@@ -3827,7 +3827,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       profile=ensureProfileShape(getActiveProfile());
       if(!profile)return;
       if(Number(profile.milkshakesAvailable||0)<=0){
-        subcontrol.textContent="No milkshakes available. Ask Revie to assign more.";
+        subcontrol.textContent="No milkshakes available.";
         renderCustomerState();
         return;
       }
