@@ -2545,7 +2545,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       </section>
 
       <section class="card">
-        <h3 id="historyTitle">Konling pull history</h3>
+        <h3 id="historyTitle">Milkshake history</h3>
         <div class="history" id="history">
           <div class="history-empty">Your revealed shakes will appear here.</div>
         </div>
@@ -2631,7 +2631,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       <div class="detail-section-title"><span>07</span><div><b>Tracking &amp; randomness</b><small>What the wheel is actually doing behind the animation.</small></div></div>
       <div class="detail-notes">
         <p><strong>Random selection:</strong> results are chosen centrally with a cryptographic server-side random generator. The wheel animation displays the selected result; it does not decide the odds visually.</p>
-        <p><strong>Per-Konling progress:</strong> total pulls, unique shakes, Syrup Drops, pull history and guarantee progress are tracked separately for each Konling username.</p>
+        <p><strong>Per-Konling progress:</strong> total milkshakes used, unique shakes, Syrup Drops, milkshake history and guarantee progress are tracked separately for each Konling username.</p>
         <p><strong>Current storage:</strong> authoritative pulls, pity and Syrup Drops are stored centrally. This browser keeps a local mirror for faster display and resyncs known Konlings from the central log.</p>
         <p><strong>Rewards:</strong> Each milkshake has its own reward, shown on its reveal card.</p>
       </div>
@@ -3386,7 +3386,8 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     }
     applyCustomerState(stateRes.data[0],historyRes.error?null:historyRes.data);
     renderCustomerState();
-    resetPull();
+    var revealOpen=document.getElementById("revealBack").classList.contains("show");
+    if(!spinning && phase==="rarity" && !pendingCentralPull && !revealOpen) resetPull();
     return true;
   }
 
@@ -3438,18 +3439,27 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
   }
 
   var adminSyncChannel=("BroadcastChannel" in window)?new BroadcastChannel("whisk-whim-admin-sync"):null;
+  function handleAdminSyncMessage(msg){
+    if(!msg)return;
+    if(msg.type==="konling-deleted"){
+      removeDeletedKonlingFromLocal(msg.konlingId);
+      return;
+    }
+    var profile=getActiveProfile();
+    if(msg.type==="konling-updated"&&profile&&profile.clientId===msg.konlingId&&!spinning){
+      syncActiveProfileFromCentral(false);
+    }
+  }
   if(adminSyncChannel){
-    adminSyncChannel.onmessage=function(e){
-      if(e.data&&e.data.type==="konling-deleted")removeDeletedKonlingFromLocal(e.data.konlingId);
-    };
+    adminSyncChannel.onmessage=function(e){handleAdminSyncMessage(e.data);};
   }
   window.addEventListener("storage",function(e){
     if(e.key!=="whiskWhimAdminSync"||!e.newValue)return;
-    try{
-      var msg=JSON.parse(e.newValue);
-      if(msg&&msg.type==="konling-deleted")removeDeletedKonlingFromLocal(msg.konlingId);
-    }catch(err){}
+    try{handleAdminSyncMessage(JSON.parse(e.newValue));}catch(err){}
   });
+  window.addEventListener("focus",function(){if(customerSessionToken&&!spinning)syncActiveProfileFromCentral(false);});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden&&customerSessionToken&&!spinning)syncActiveProfileFromCentral(false);});
+  setInterval(function(){if(customerSessionToken&&!spinning)syncActiveProfileFromCentral(false);},30000);
 
   function renderCustomerState(){
     var profile=ensureProfileShape(getActiveProfile());
@@ -3856,11 +3866,22 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       }
 
       if(centralResult.error || !centralResult.data || !centralResult.data.length){
-        subcontrol.textContent = "Could not save this pull. Nothing was spun or counted. Please try again.";
-        spinning = false;
-        spinBtn.disabled = false;
-        customerSelect.disabled = false;
-        restartGuarantee.disabled = false;
+        var pullError=centralResult.error?centralResult.error.message:"Could not use this milkshake.";
+        if(/session expired|no longer exists/i.test(pullError)){
+          spinning=false;
+          customerSelect.disabled=false;
+          clearCustomerSession(pullError);
+          return;
+        }
+        subcontrol.textContent=/no milkshakes available/i.test(pullError)
+          ? "No milkshakes available. Ask Revie to assign more."
+          : "Could not use this milkshake. Nothing extra was counted. Please try again.";
+        spinning=false;
+        spinBtn.disabled=false;
+        customerSelect.disabled=false;
+        restartGuarantee.disabled=true;
+        await syncActiveProfileFromCentral(false);
+        renderCustomerState();
         return;
       }
 
@@ -3982,7 +4003,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     document.getElementById("revealTier").textContent = tier.label+" shake";
     document.getElementById("revealName").textContent = shake[0];
     document.getElementById("revealDesc").textContent = shake[1] || "Custom description coming soon.";
-    document.getElementById("revealOdds").textContent = "Overall pull chance: "+formatPct(rate)+" · "+tier.weight+"% rarity pool";
+    document.getElementById("revealOdds").textContent = "Overall chance: "+formatPct(rate)+" · "+tier.weight+"% rarity pool";
     document.getElementById("revealReward").textContent = shake[2] || "Reward details unavailable";
 
     var status = document.getElementById("revealStatus");
