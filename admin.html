@@ -136,6 +136,11 @@
   function showLogin(msg){loginView.style.display="block";dashView.classList.remove("show");if(msg)loginStatus.textContent=msg;}
   function showDash(){loginView.style.display="none";dashView.classList.add("show");}
   function accountFor(k){return allAccounts.find(function(a){return a.konling_uuid===k.id;})||null;}
+  function broadcastKonlingUpdate(konlingId){
+    var msg={type:"konling-updated",konlingId:konlingId,at:Date.now()};
+    if(syncChannel){try{syncChannel.postMessage(msg);}catch(e){}}
+    try{localStorage.setItem("whiskWhimAdminSync",JSON.stringify(msg));}catch(e){}
+  }
   function randomPassword(){
     var upper="ABCDEFGHJKLMNPQRSTUVWXYZ",lower="abcdefghijkmnopqrstuvwxyz",digits="23456789",symbols="!@#$%";
     var all=upper+lower+digits+symbols;
@@ -327,6 +332,7 @@
         var res=await client.rpc("admin_add_milkshakes",{p_konling_id:k.konling_id,p_amount:n});
         if(res.error){adminStatus.textContent=res.error.message;return;}
         adminStatus.textContent=n+" milkshake"+(n===1?"":"s")+" added to "+k.username+".";
+        broadcastKonlingUpdate(k.konling_id);
         await loadData(true);renderProfile();
       };
       document.getElementById("setMilkBtn").onclick=async function(){
@@ -335,6 +341,7 @@
         var res=await client.rpc("admin_set_milkshake_balance",{p_konling_id:k.konling_id,p_available:n});
         if(res.error){adminStatus.textContent=res.error.message;return;}
         adminStatus.textContent=k.username+" now has "+n+" available milkshake"+(n===1?"":"s")+".";
+        broadcastKonlingUpdate(k.konling_id);
         await loadData(true);renderProfile();
       };
       document.getElementById("saveLoginUsernameBtn").onclick=async function(){
@@ -352,6 +359,7 @@
         if(res.error){adminStatus.textContent=res.error.message;return;}
         showCredential(k.username,k.konling_id,a.login_username,value);
         adminStatus.textContent="Password reset. Their old sessions were signed out. Copy the new login details.";
+        broadcastKonlingUpdate(k.konling_id);
         document.getElementById("resetPasswordValue").value="";
       };
     }else{
