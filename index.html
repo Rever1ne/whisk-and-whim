@@ -1936,6 +1936,41 @@ body{
   to{background-position:300% 0}
 }
 
+
+/* Customer login and assigned-milkshake account panel */
+.konling-account-shell{display:grid;gap:12px}
+.konling-login-card,.konling-session-card{
+  border:1px solid rgba(54,91,126,.18);border-radius:18px;
+  background:linear-gradient(145deg,rgba(239,247,252,.92),rgba(210,226,239,.88));
+  padding:14px;box-shadow:0 10px 26px rgba(56,91,124,.09)
+}
+.konling-login-card h3,.konling-session-card h3{margin:0;color:#31536e;font-size:15px}
+.konling-login-card p,.konling-session-card p{margin:4px 0 11px;color:#5d7890;font-size:11px;line-height:1.5}
+.konling-login-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
+.konling-field{display:grid;gap:5px}
+.konling-field label{font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#668198}
+.konling-field input{
+  width:100%;border:1px solid rgba(54,91,126,.22);background:#edf5fa;color:#24435e;
+  border-radius:11px;padding:10px 11px;outline:none;font:inherit
+}
+.konling-login-btn,.konling-logout-btn{
+  border:1px solid rgba(158,75,108,.28);background:linear-gradient(145deg,#ffe5ef,#f1acc6);
+  color:#55243a;border-radius:11px;padding:10px 14px;font-weight:900;cursor:pointer
+}
+.konling-logout-btn{padding:8px 11px;font-size:10px}
+.konling-login-status{min-height:16px;margin-top:8px;color:#5c7892;font-size:10px}
+.konling-session-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.konling-session-head b{display:block;font-size:16px;color:#294b68}.konling-session-head span{font-size:10px;color:#6a8296}
+.customer-info.account-stats{grid-template-columns:repeat(7,minmax(0,1fr));margin-top:11px}
+.customer-info.account-stats .customer-stat b{font-size:15px}
+.account-zero{
+  margin-top:10px;padding:9px 11px;border-radius:11px;background:rgba(255,225,235,.62);
+  color:#71435a;font-size:10px;font-weight:800
+}
+.spin:disabled{cursor:not-allowed;filter:saturate(.55);opacity:.58}
+@media(max-width:900px){.customer-info.account-stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:640px){.konling-login-grid{grid-template-columns:1fr}.customer-info.account-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 <style id="ticket-only-cinema-override">
   #whiskCinema .wc-stage > :not(.wc-ticket),
@@ -2029,32 +2064,38 @@ body{
       </div>
 
       <div class="customer-tools">
-        <div class="customer-select-wrap">
-          <select id="customerSelect" aria-label="Select Konling">
-            <option value="">Select Konling…</option>
-          </select>
-          <button class="customer-browse" id="browseKonlingsBtn" type="button" aria-label="Browse Konlings" title="Browse Konlings">⌄</button>
-          <div class="konling-scroll-menu" id="konlingScrollMenu" role="listbox" aria-label="Konling list"></div>
-        </div>
-        <button class="customer-action" id="newCustomerBtn" title="Add Konling" aria-label="Add Konling">＋</button>
-        <button class="customer-action" id="editCustomerBtn" title="Edit Konling" aria-label="Edit Konling">✎</button>
-        <button class="customer-action" id="deleteCustomerBtn" title="Remove Konling" aria-label="Remove Konling">×</button>
+        <div class="konling-account-shell">
+          <div class="konling-login-card" id="customerLoginCard">
+            <h3>Konling login</h3>
+            <p>Use the username and password Revie gave you. No email is needed.</p>
+            <div class="konling-login-grid">
+              <div class="konling-field"><label for="customerLoginUsername">Username</label><input id="customerLoginUsername" maxlength="40" autocomplete="username" placeholder="Your login username"></div>
+              <div class="konling-field"><label for="customerLoginPassword">Password</label><input id="customerLoginPassword" type="password" maxlength="128" autocomplete="current-password" placeholder="Your password"></div>
+              <button class="konling-login-btn" id="customerLoginBtn" type="button">LOG IN</button>
+            </div>
+            <div class="konling-login-status" id="customerLoginStatus"></div>
+          </div>
 
-        <div class="customer-editor" id="customerEditor">
-          <input id="customerName" type="text" maxlength="40" placeholder="Konling username" autocomplete="off">
-          <button id="saveCustomerBtn">Save</button>
-          <button id="cancelCustomerBtn">Cancel</button>
+          <div class="konling-session-card" id="customerSessionCard" style="display:none">
+            <div class="konling-session-head">
+              <div><b id="sessionKonlingName">Konling</b><span id="sessionLoginName"></span></div>
+              <button class="konling-logout-btn" id="customerLogoutBtn" type="button">Log out</button>
+            </div>
+            <div class="customer-info account-stats">
+              <div class="customer-stat"><b id="clientIdStat">—</b><span>Konling ID</span></div>
+              <div class="customer-stat"><b id="assignedStat">0</b><span>Total milkshakes assigned</span></div>
+              <div class="customer-stat"><b id="usedStat">0</b><span>Total used</span></div>
+              <div class="customer-stat"><b id="availableStat">0</b><span>Available</span></div>
+              <div class="customer-stat"><b id="uniqueStat">0 / 15</b><span>Collection</span></div>
+              <div class="customer-stat"><b id="syrupStat">0</b><span>Syrup drops</span></div>
+              <div class="customer-stat"><b id="pityStat">0 / 4</b><span>Current pity</span></div>
+            </div>
+            <div class="account-zero" id="accountZeroNotice" style="display:none">You have no milkshakes available right now. The wheel stays visible, but spinning is disabled until Revie assigns more.</div>
+          </div>
         </div>
 
-        <div class="customer-info">
-          <div class="customer-stat"><b id="clientIdStat">—</b><span>Konling ID</span></div>
-          <div class="customer-stat"><b id="pullsStat">0</b><span>Total pulls</span></div>
-          <div class="customer-stat"><b id="uniqueStat">0 / 15</b><span>Unique shakes</span></div>
-          <div class="customer-stat"><b id="syrupStat">0</b><span>Syrup drops</span></div>
-          <div class="customer-stat"><b id="pityStat">0 / 4</b><span>Current pity</span></div>
-        </div>
-
-        <div class="customer-active" id="customerActive">Choose a Konling before spinning.</div>
+        <select id="customerSelect" hidden aria-hidden="true"><option value=""></option></select>
+        <div class="customer-active" id="customerActive">Log in to use your assigned milkshakes.</div>
       </div>
 
       <div class="wheel-feature">
@@ -3202,32 +3243,35 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
   var historyEl = document.getElementById("history");
   var historyTitle = document.getElementById("historyTitle");
   var customerSelect = document.getElementById("customerSelect");
-  var browseKonlingsBtn = document.getElementById("browseKonlingsBtn");
-  var konlingScrollMenu = document.getElementById("konlingScrollMenu");
-  var customerName = document.getElementById("customerName");
   var customerActive = document.getElementById("customerActive");
-  var customerEditor = document.getElementById("customerEditor");
-  var newCustomerBtn = document.getElementById("newCustomerBtn");
-  var editCustomerBtn = document.getElementById("editCustomerBtn");
-  var deleteCustomerBtn = document.getElementById("deleteCustomerBtn");
-  var saveCustomerBtn = document.getElementById("saveCustomerBtn");
-  var cancelCustomerBtn = document.getElementById("cancelCustomerBtn");
+  var customerLoginCard = document.getElementById("customerLoginCard");
+  var customerSessionCard = document.getElementById("customerSessionCard");
+  var customerLoginUsername = document.getElementById("customerLoginUsername");
+  var customerLoginPassword = document.getElementById("customerLoginPassword");
+  var customerLoginBtn = document.getElementById("customerLoginBtn");
+  var customerLogoutBtn = document.getElementById("customerLogoutBtn");
+  var customerLoginStatus = document.getElementById("customerLoginStatus");
+  var sessionKonlingName = document.getElementById("sessionKonlingName");
+  var sessionLoginName = document.getElementById("sessionLoginName");
   var clientIdStat = document.getElementById("clientIdStat");
-  var pullsStat = document.getElementById("pullsStat");
+  var assignedStat = document.getElementById("assignedStat");
+  var usedStat = document.getElementById("usedStat");
+  var availableStat = document.getElementById("availableStat");
   var uniqueStat = document.getElementById("uniqueStat");
   var syrupStat = document.getElementById("syrupStat");
   var pityStat = document.getElementById("pityStat");
-  var guaranteeBox = document.getElementById("guaranteeBox");
+  var accountZeroNotice = document.getElementById("accountZeroNotice");
+    var guaranteeBox = document.getElementById("guaranteeBox");
   var guaranteeTitle = document.getElementById("guaranteeTitle");
   var guaranteeSub = document.getElementById("guaranteeSub");
   var guaranteeFill = document.getElementById("guaranteeFill");
   var restartGuarantee = document.getElementById("restartGuarantee");
 
-  var STORAGE_KEY = "revieWhiskWhimCustomersV1";
-  var ACTIVE_KEY = "revieWhiskWhimActiveCustomerV1";
+  var SESSION_KEY = "whiskWhimCustomerSessionV1";
   var GUARANTEE_AFTER_MISSES = 4;
-  var customers = loadCustomers();
-  var activeCustomerKey = localStorage.getItem(ACTIVE_KEY) || "";
+  var customerSessionToken = localStorage.getItem(SESSION_KEY) || "";
+  var customers = {};
+  var activeCustomerKey = "";
 
   var phase = "rarity";
   var selectedTier = null;
@@ -3246,34 +3290,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       })
     : null;
 
-  function loadCustomers(){
-    try{
-      var raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      return raw && typeof raw === "object" ? raw : {};
-    }catch(e){
-      return {};
-    }
-  }
-
-  function saveCustomers(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
-    if(activeCustomerKey) localStorage.setItem(ACTIVE_KEY, activeCustomerKey);
-    else localStorage.removeItem(ACTIVE_KEY);
-  }
-
-  var legacyIdMigrated = false;
-  Object.keys(customers).forEach(function(key){
-    var profile = customers[key];
-    if(profile && profile.clientId === "K0013" && String(profile.name || "").trim().toLowerCase() === "revie"){
-      profile.clientId = "K0001";
-      legacyIdMigrated = true;
-    }
-  });
-  if(legacyIdMigrated) saveCustomers();
-
-  function customerKey(name){
-    return name.trim().toLowerCase();
-  }
+  function saveCustomers(){}
 
   function getActiveProfile(){
     return activeCustomerKey && customers[activeCustomerKey] ? customers[activeCustomerKey] : null;
@@ -3284,403 +3301,219 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     if(typeof profile.pity !== "number") profile.pity = 0;
     if(typeof profile.totalPulls !== "number") profile.totalPulls = 0;
     if(typeof profile.syrupDrops !== "number") profile.syrupDrops = 0;
-    if(!profile.clientId) profile.clientId = "C" + String(Object.keys(customers).indexOf(activeCustomerKey)+1).padStart(3,"0");
+    if(typeof profile.milkshakesAvailable !== "number") profile.milkshakesAvailable = 0;
+    if(typeof profile.totalUsed !== "number") profile.totalUsed = 0;
+    if(typeof profile.totalAssigned !== "number") profile.totalAssigned = profile.milkshakesAvailable + profile.totalUsed;
     if(!Array.isArray(profile.history)) profile.history = [];
     return profile;
   }
 
   function uniqueShakeNames(profile){
-    var set = {};
-    (profile.history || []).forEach(function(h){ set[h.name] = true; });
+    var set={};
+    (profile.history||[]).forEach(function(h){set[h.name]=true;});
     return Object.keys(set);
   }
 
   function hasPulledShake(profile,name){
-    return (profile.history || []).some(function(h){ return h.name === name; });
+    return (profile.history||[]).some(function(h){return h.name===name;});
   }
 
-  async function hasAdminIdentityAccess(){
-    if(!centralClient) return false;
+  function mapCustomerHistory(rows){
+    return (rows||[]).map(function(h){
+      return {
+        stars:Number(h.stars||0),
+        name:h.shake_name,
+        tier:h.rarity,
+        reward:h.reward||"Reward details unavailable",
+        duplicate:!!h.duplicate,
+        syrupEarned:Number(h.syrup_earned||0),
+        guaranteed:!!h.guaranteed,
+        at:h.created_at
+      };
+    });
+  }
+
+  function applyCustomerState(state,historyRows){
+    var profile=ensureProfileShape(customers.session||{history:[]});
+    profile.name=state.username;
+    profile.clientId=state.konling_id;
+    profile.loginUsername=state.login_username||profile.loginUsername||"";
+    profile.pity=Number(state.pity||0);
+    profile.totalPulls=Number(state.total_pulls||0);
+    profile.syrupDrops=Number(state.syrup_drops||0);
+    profile.uniqueShakes=Number(state.unique_shakes||0);
+    profile.milkshakesAvailable=Number(state.milkshakes_available||0);
+    profile.totalUsed=Number(state.total_used||0);
+    profile.totalAssigned=Number(state.total_assigned||0);
+    if(Array.isArray(historyRows)) profile.history=mapCustomerHistory(historyRows);
+    customers={session:profile};
+    activeCustomerKey="session";
+    return profile;
+  }
+
+  function clearCustomerSession(message){
+    customerSessionToken="";
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem("revieWhiskWhimCustomersV1");
+    localStorage.removeItem("revieWhiskWhimActiveCustomerV1");
+    customers={};
+    activeCustomerKey="";
+    pendingCentralPull=null;
+    currentPullGuaranteed=false;
+    if(message) customerLoginStatus.textContent=message;
+    resetPull();
+    renderCustomerState();
+  }
+
+  async function syncActiveProfileFromCentral(showError){
+    if(!customerSessionToken||!centralClient)return false;
+    var results;
     try{
-      var sessionRes = await centralClient.auth.getSession();
-      var session = sessionRes && sessionRes.data ? sessionRes.data.session : null;
-      if(!session) return false;
-      var check = await centralClient.from("admin_users")
-        .select("user_id")
-        .eq("user_id",session.user.id)
-        .maybeSingle();
-      return !check.error && !!check.data;
+      results=await Promise.all([
+        centralClient.rpc("get_customer_state",{p_session_token:customerSessionToken}),
+        centralClient.rpc("get_customer_history",{p_session_token:customerSessionToken})
+      ]);
     }catch(e){
+      if(showError)customerLoginStatus.textContent="Could not refresh your account right now.";
       return false;
     }
-  }
-
-  async function requireAdminIdentityAccess(){
-    var allowed = await hasAdminIdentityAccess();
-    if(allowed) return true;
-    customerActive.textContent = "Admin login required to add or rename Konlings.";
-    alert("Admin login is required before you can add or rename a Konling. Open Admin Den, log in, then try again.");
-    return false;
-  }
-
-  async function openCustomerEditor(mode){
-    if(spinning) return;
-    if(!(await requireAdminIdentityAccess())) return;
-    customerEditor.classList.add("show");
-    customerEditor.dataset.mode = mode;
-    var profile = getActiveProfile();
-    customerName.value = mode === "edit" && profile ? profile.name : "";
-    setTimeout(function(){ customerName.focus(); },30);
-  }
-
-  function closeCustomerEditor(){
-    customerEditor.classList.remove("show");
-    customerName.value = "";
-    customerEditor.dataset.mode = "";
-  }
-
-  function renderCustomerOptions(){
-    var current = activeCustomerKey;
-    var keys = Object.keys(customers)
-      .sort(function(a,b){ return customers[a].name.localeCompare(customers[b].name); });
-
-    customerSelect.innerHTML = '<option value="">Select Konling…</option>';
-    konlingScrollMenu.innerHTML = "";
-
-    keys.forEach(function(key){
-      var opt = document.createElement("option");
-      opt.value = key;
-      opt.textContent = customers[key].name;
-      customerSelect.appendChild(opt);
-
-      var item = document.createElement("button");
-      item.type = "button";
-      item.textContent = customers[key].name;
-      item.dataset.key = key;
-      item.classList.toggle("active",key === current);
-      item.addEventListener("click",function(){
-        konlingScrollMenu.classList.remove("show");
-        selectCustomer(key);
-      });
-      konlingScrollMenu.appendChild(item);
-    });
-
-    browseKonlingsBtn.style.display = keys.length ? "grid" : "none";
-
-    if(current && customers[current]){
-      customerSelect.value = current;
-    }else{
-      activeCustomerKey = "";
-      customerSelect.value = "";
+    var stateRes=results[0],historyRes=results[1];
+    if(stateRes.error||!stateRes.data||!stateRes.data.length){
+      var msg=stateRes.error?stateRes.error.message:"Session expired. Please log in again.";
+      if(/session expired|no longer exists/i.test(msg)){clearCustomerSession(msg);return false;}
+      if(showError)customerLoginStatus.textContent=msg;
+      return false;
     }
-  }
-
-  function selectCustomer(key){
-    if(spinning) return;
-    activeCustomerKey = key && customers[key] ? key : "";
-    saveCustomers();
-    renderCustomerOptions();
-    resetPull();
+    applyCustomerState(stateRes.data[0],historyRes.error?null:historyRes.data);
     renderCustomerState();
-    syncActiveProfileFromCentral();
+    resetPull();
+    return true;
   }
 
-  async function syncActiveProfileFromCentral(){
-    var profile = ensureProfileShape(getActiveProfile());
-    if(!profile || !centralClient || !/^K\d+$/.test(profile.clientId || "")) return;
-
-    var stateRes,historyRes;
-    try{
-      var results = await Promise.all([
-        centralClient.rpc("get_konling_state",{
-          p_username:profile.name,
-          p_konling_id:profile.clientId
-        }),
-        centralClient.rpc("get_konling_history",{
-          p_username:profile.name,
-          p_konling_id:profile.clientId
-        })
-      ]);
-      stateRes = results[0];
-      historyRes = results[1];
-    }catch(e){
+  async function loginCustomer(){
+    if(!centralClient){customerLoginStatus.textContent="The login service is unavailable. Please refresh.";return;}
+    var username=customerLoginUsername.value.trim();
+    var password=customerLoginPassword.value;
+    if(!username||!password){customerLoginStatus.textContent="Enter your username and password.";return;}
+    customerLoginBtn.disabled=true;
+    customerLoginStatus.textContent="Opening your Konling profile…";
+    var res;
+    try{res=await centralClient.rpc("customer_login",{p_login_username:username,p_password:password});}
+    catch(e){res={error:e};}
+    customerLoginBtn.disabled=false;
+    if(res.error||!res.data||!res.data.length){
+      customerLoginStatus.textContent=res.error?res.error.message:"Could not log in.";
       return;
     }
-
-    if(stateRes.error || !stateRes.data || !stateRes.data.length) return;
-
-    var central = stateRes.data[0];
-    profile.totalPulls = Number(central.total_pulls || 0);
-    profile.pity = Number(central.pity || 0);
-    profile.syrupDrops = Number(central.syrup_drops || 0);
-
-    if(!historyRes.error && Array.isArray(historyRes.data)){
-      profile.history = historyRes.data.map(function(h){
-        return {
-          stars:Number(h.stars || 0),
-          name:h.shake_name,
-          tier:h.rarity,
-          reward:h.reward || "Reward details unavailable",
-          duplicate:!!h.duplicate,
-          syrupEarned:Number(h.syrup_earned || 0),
-          guaranteed:!!h.guaranteed,
-          at:h.created_at
-        };
-      });
-    }
-
-    saveCustomers();
-
-    if(!spinning){
-      resetPull();
-      renderCustomerState();
-    }
-  }
-
-  async function saveCustomerEditor(){
-    if(spinning) return;
-    var name = customerName.value.trim();
-    if(!name) return;
-    var mode = customerEditor.dataset.mode || "new";
-
-    if(!(await requireAdminIdentityAccess())) return;
-
-    if(mode === "edit" && activeCustomerKey && customers[activeCustomerKey]){
-      var oldKey = activeCustomerKey;
-      var profile = ensureProfileShape(customers[oldKey]);
-
-      if(!/^K\d+$/.test(profile.clientId || "")){
-        customerActive.textContent = "This old local profile cannot be renamed. Delete it and add it again while logged into Admin Den.";
-        return;
-      }
-
-      saveCustomerBtn.disabled = true;
-      customerActive.textContent = "Renaming "+profile.name+"…";
-
-      var renamed;
-      try{
-        renamed = await centralClient.rpc("rename_konling_profile",{
-          p_konling_id:profile.clientId,
-          p_username:name
-        });
-      }catch(e){
-        renamed = {error:e};
-      }
-
-      saveCustomerBtn.disabled = false;
-
-      if(renamed.error || !renamed.data || !renamed.data.length){
-        customerActive.textContent = "Could not rename this Konling. Nothing was changed.";
-        return;
-      }
-
-      var newKey = customerKey(name);
-      profile.name = renamed.data[0].username || name;
-      if(newKey !== oldKey){
-        customers[newKey] = profile;
-        delete customers[oldKey];
-        activeCustomerKey = newKey;
-      }
-    }else{
-      var key = customerKey(name);
-      if(!customers[key]){
-        if(!centralClient){
-          customerActive.textContent = "The central Konling tracker is unavailable. Please refresh and try again.";
-          return;
-        }
-
-        saveCustomerBtn.disabled = true;
-        customerActive.textContent = "Creating a fresh Konling profile…";
-
-        var created;
-        try{
-          created = await centralClient.rpc("create_konling_profile",{p_username:name});
-        }catch(e){
-          created = {error:e};
-        }
-
-        saveCustomerBtn.disabled = false;
-
-        if(created.error || !created.data || !created.data.length){
-          customerActive.textContent = "Could not create this Konling profile. Nothing was saved.";
-          return;
-        }
-
-        var fresh = created.data[0];
-        customers[key] = {
-          name:name,
-          clientId:fresh.konling_id,
-          pity:Number(fresh.pity || 0),
-          totalPulls:Number(fresh.total_pulls || 0),
-          syrupDrops:Number(fresh.syrup_drops || 0),
-          history:[],
-          identityVersion:2
-        };
-      }
-      activeCustomerKey = key;
-    }
-
-    closeCustomerEditor();
-    saveCustomers();
-    renderCustomerOptions();
-    resetPull();
+    var row=res.data[0];
+    customerSessionToken=row.session_token;
+    localStorage.setItem(SESSION_KEY,customerSessionToken);
+    applyCustomerState(row,null);
+    customerLoginPassword.value="";
+    customerLoginStatus.textContent="";
+    await syncActiveProfileFromCentral(false);
     renderCustomerState();
-  }
-
-  async function deleteActiveCustomer(){
-    if(spinning) return;
-    var profile = ensureProfileShape(getActiveProfile());
-    if(!profile) return;
-
-    var centralProfile = /^K\d+$/.test(profile.clientId || "");
-    var warning = centralProfile
-      ? "Permanently delete "+profile.name+"? This erases their Konling ID, profile, every pull, collection progress, pity and Syrup Drops. The deleted K ID will not be reused. This cannot be undone."
-      : "Remove "+profile.name+" and their locally saved wheel history?";
-
-    if(!confirm(warning)) return;
-
-    if(centralProfile){
-      if(!centralClient){
-        alert("The central database is unavailable. Nothing was deleted.");
-        return;
-      }
-
-      deleteCustomerBtn.disabled = true;
-      customerActive.textContent = "Deleting "+profile.name+" and all pull records…";
-
-      var res;
-      try{
-        res = await centralClient.rpc("delete_konling_profile",{
-          p_konling_id:profile.clientId,
-          p_username:profile.name
-        });
-      }catch(e){
-        res = {error:e};
-      }
-
-      if(res.error || res.data !== true){
-        deleteCustomerBtn.disabled = false;
-        customerActive.textContent = "Delete cancelled. Central records were kept.";
-        alert("For safety, permanent deletion requires your Admin Den login. Open Admin in the other tab, sign in, then try again.");
-        return;
-      }
-    }
-
-    if(centralProfile){
-      try{
-        var syncChannel = new BroadcastChannel("whisk-whim-admin-sync");
-        syncChannel.postMessage({type:"konling-deleted",konlingId:profile.clientId});
-        syncChannel.close();
-      }catch(e){}
-      try{
-        localStorage.setItem("whiskWhimAdminSync",JSON.stringify({
-          type:"konling-deleted",
-          konlingId:profile.clientId,
-          at:Date.now()
-        }));
-      }catch(e){}
-    }
-
-    delete customers[activeCustomerKey];
-    activeCustomerKey = "";
-    saveCustomers();
-    renderCustomerOptions();
     resetPull();
-    renderCustomerState();
-    deleteCustomerBtn.disabled = false;
   }
+
+  async function logoutCustomer(){
+    var token=customerSessionToken;
+    if(token&&centralClient){
+      try{await centralClient.rpc("customer_logout",{p_session_token:token});}catch(e){}
+    }
+    customerLoginUsername.value="";
+    customerLoginPassword.value="";
+    clearCustomerSession("Logged out.");
+  }
+
+  function renderCustomerOptions(){}
+
+  function selectCustomer(){}
 
   function removeDeletedKonlingFromLocal(konlingId){
-    if(!konlingId) return;
-    var removedActive = false;
-    Object.keys(customers).forEach(function(key){
-      var p = ensureProfileShape(customers[key]);
-      if(p && p.clientId === konlingId){
-        if(activeCustomerKey === key) removedActive = true;
-        delete customers[key];
-      }
-    });
-    if(removedActive) activeCustomerKey = "";
-    saveCustomers();
-    renderCustomerOptions();
-    if(!spinning){
-      resetPull();
-      renderCustomerState();
+    var profile=getActiveProfile();
+    if(profile&&profile.clientId===konlingId){
+      clearCustomerSession("This Konling profile was deleted by the admin.");
     }
   }
 
-  var adminSyncChannel = ("BroadcastChannel" in window)
-    ? new BroadcastChannel("whisk-whim-admin-sync")
-    : null;
-
+  var adminSyncChannel=("BroadcastChannel" in window)?new BroadcastChannel("whisk-whim-admin-sync"):null;
   if(adminSyncChannel){
-    adminSyncChannel.onmessage = function(e){
-      if(e.data && e.data.type === "konling-deleted"){
-        removeDeletedKonlingFromLocal(e.data.konlingId);
-      }
+    adminSyncChannel.onmessage=function(e){
+      if(e.data&&e.data.type==="konling-deleted")removeDeletedKonlingFromLocal(e.data.konlingId);
     };
   }
-
   window.addEventListener("storage",function(e){
-    if(e.key !== "whiskWhimAdminSync" || !e.newValue) return;
+    if(e.key!=="whiskWhimAdminSync"||!e.newValue)return;
     try{
-      var msg = JSON.parse(e.newValue);
-      if(msg && msg.type === "konling-deleted"){
-        removeDeletedKonlingFromLocal(msg.konlingId);
-      }
+      var msg=JSON.parse(e.newValue);
+      if(msg&&msg.type==="konling-deleted")removeDeletedKonlingFromLocal(msg.konlingId);
     }catch(err){}
   });
 
   function renderCustomerState(){
-    var profile = ensureProfileShape(getActiveProfile());
+    var profile=ensureProfileShape(getActiveProfile());
 
     if(!profile){
-      customerActive.textContent = "Choose a Konling before spinning.";
-      historyTitle.textContent = "Konling pull history";
-      clientIdStat.textContent = "—";
-      pullsStat.textContent = "0";
-      uniqueStat.textContent = "0 / 15";
-      syrupStat.textContent = "0";
-      pityStat.textContent = "0 / 4";
-      guaranteeTitle.textContent = "Guarantee progress";
-      guaranteeSub.textContent = "Select a Konling to begin tracking.";
-      guaranteeFill.style.width = "0%";
+      customerLoginCard.style.display="block";
+      customerSessionCard.style.display="none";
+      customerActive.textContent="Log in to use your assigned milkshakes.";
+      historyTitle.textContent="Milkshake history";
+      guaranteeTitle.textContent="Guarantee progress";
+      guaranteeSub.textContent="Log in to see your pity progress.";
+      guaranteeFill.style.width="0%";
       guaranteeBox.classList.remove("ready");
-      restartGuarantee.disabled = true;
-      if(!spinning) spinBtn.disabled = true;
+      restartGuarantee.disabled=true;
+      if(!spinning)spinBtn.disabled=true;
+      spinBtn.textContent="Milkshakes x0";
       renderHistory();
       return;
     }
 
-    var misses = Math.max(0,Math.min(GUARANTEE_AFTER_MISSES,profile.pity));
-    var progress = (misses / GUARANTEE_AFTER_MISSES) * 100;
-    var uniques = uniqueShakeNames(profile).length;
-    customerActive.textContent = "Loaded: " + profile.name;
-    historyTitle.textContent = profile.name + " · pull history";
-    clientIdStat.textContent = profile.clientId || "—";
-    pullsStat.textContent = profile.totalPulls;
-    uniqueStat.textContent = uniques + " / 15";
-    syrupStat.textContent = profile.syrupDrops || 0;
-    pityStat.textContent = misses + " / " + GUARANTEE_AFTER_MISSES;
-    guaranteeFill.style.width = progress + "%";
-    restartGuarantee.disabled = spinning;
+    customerLoginCard.style.display="none";
+    customerSessionCard.style.display="block";
+    var misses=Math.max(0,Math.min(GUARANTEE_AFTER_MISSES,profile.pity));
+    var progress=(misses/GUARANTEE_AFTER_MISSES)*100;
+    var uniques=uniqueShakeNames(profile).length;
+    var available=Math.max(0,Number(profile.milkshakesAvailable||0));
 
-    if(misses >= GUARANTEE_AFTER_MISSES){
+    sessionKonlingName.textContent=profile.name;
+    sessionLoginName.textContent=(profile.loginUsername?"@"+profile.loginUsername+" · ":"")+profile.clientId;
+    clientIdStat.textContent=profile.clientId||"—";
+    assignedStat.textContent=profile.totalAssigned||0;
+    usedStat.textContent=profile.totalUsed||0;
+    availableStat.textContent=available;
+    uniqueStat.textContent=uniques+" / 15";
+    syrupStat.textContent=profile.syrupDrops||0;
+    pityStat.textContent=misses+" / "+GUARANTEE_AFTER_MISSES;
+    accountZeroNotice.style.display=available<=0?"block":"none";
+
+    customerActive.textContent=available>0
+      ? "Logged in as "+profile.name+". You have "+available+" milkshake"+(available===1?"":"s")+" available."
+      : "Logged in as "+profile.name+". No milkshakes are available right now.";
+    historyTitle.textContent=profile.name+" · milkshake history";
+    guaranteeFill.style.width=progress+"%";
+    restartGuarantee.disabled=true;
+
+    if(misses>=GUARANTEE_AFTER_MISSES){
       guaranteeBox.classList.add("ready");
-      guaranteeTitle.textContent = "Your next pull is guaranteed ★★★+!";
-      guaranteeSub.textContent = "Guarantee ready · it will reset after the guaranteed pull.";
+      guaranteeTitle.textContent="Your next milkshake is guaranteed ★★★+!";
+      guaranteeSub.textContent="Guarantee ready · it resets after the guaranteed milkshake.";
     }else{
       guaranteeBox.classList.remove("ready");
-      var remaining = GUARANTEE_AFTER_MISSES - misses;
-      guaranteeTitle.textContent = remaining + " pull" + (remaining === 1 ? "" : "s") + " until your ★★★+ guarantee!";
-      guaranteeSub.textContent = misses + " / " + GUARANTEE_AFTER_MISSES + " low-rarity pulls toward guarantee.";
+      var remaining=GUARANTEE_AFTER_MISSES-misses;
+      guaranteeTitle.textContent=remaining+" milkshake"+(remaining===1?"":"s")+" until your ★★★+ guarantee!";
+      guaranteeSub.textContent=misses+" / "+GUARANTEE_AFTER_MISSES+" low-rarity milkshakes toward guarantee.";
     }
 
-    if(!spinning) spinBtn.disabled = false;
+    spinBtn.textContent="Milkshakes x"+available;
+    if(!spinning){
+      spinBtn.disabled=(phase==="rarity")?available<=0:!pendingCentralPull;
+    }
     renderHistory();
   }
 
-  function stars(n){ return "★".repeat(n); }
+    function stars(n){ return "★".repeat(n); }
 
   function secureRandom(){
     var a = new Uint32Array(1);
@@ -3975,22 +3808,19 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       return;
     }
 
-    if(phase === "rarity" && centralClient && /^K\d+$/.test(profile.clientId || "")){
-      try{
-        var liveState = await centralClient.rpc("get_konling_state",{
-          p_username:profile.name,
-          p_konling_id:profile.clientId
-        });
-        if(!liveState.error && liveState.data && liveState.data.length){
-          var live = liveState.data[0];
-          profile.totalPulls = Number(live.total_pulls || 0);
-          profile.pity = Number(live.pity || 0);
-          profile.syrupDrops = Number(live.syrup_drops || 0);
-          saveCustomers();
-          resetPull();
-          renderCustomerState();
-        }
-      }catch(e){}
+    if(phase === "rarity"){
+      if(!customerSessionToken){
+        subcontrol.textContent="Log in before using a milkshake.";
+        return;
+      }
+      await syncActiveProfileFromCentral(false);
+      profile=ensureProfileShape(getActiveProfile());
+      if(!profile)return;
+      if(Number(profile.milkshakesAvailable||0)<=0){
+        subcontrol.textContent="No milkshakes available. Ask Revie to assign more.";
+        renderCustomerState();
+        return;
+      }
     }
 
     spinning = true;
@@ -4018,9 +3848,8 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
       var centralResult;
       try{
-        centralResult = await centralClient.rpc("perform_gacha_pull",{
-          p_username:profile.name,
-          p_konling_id:/^K\d+$/.test(profile.clientId || "") ? profile.clientId : null
+        centralResult = await centralClient.rpc("perform_customer_gacha_pull",{
+          p_session_token:customerSessionToken
         });
       }catch(e){
         centralResult = {error:e};
@@ -4037,6 +3866,9 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
       pendingCentralPull = centralResult.data[0];
       currentPullGuaranteed = !!pendingCentralPull.guaranteed;
+      profile.milkshakesAvailable = Number(pendingCentralPull.milkshakes_available || 0);
+      profile.totalUsed = Number(pendingCentralPull.total_used || 0);
+      profile.totalAssigned = Number(pendingCentralPull.total_assigned || 0);
       items = currentItems();
       index = items.findIndex(function(x){ return x.tier && x.tier.stars === Number(pendingCentralPull.stars); });
       if(index < 0) index = 0;
@@ -4098,7 +3930,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
           kicker.textContent = "Second spin · "+selectedTier.label;
           stageTitle.textContent = stars(selectedTier.stars)+" shake wheel";
           stageText.textContent = "One of "+selectedTier.shakes.length+" permanent shakes will be selected.";
-          spinBtn.textContent = "SPIN MILKSHAKE";
+          spinBtn.textContent = "Milkshakes x"+Number(profile.milkshakesAvailable||0);
           centerCap.innerHTML = "WHISK<span>"+stars(selectedTier.stars)+"</span>";
           resultChip.classList.remove("show");
           subcontrol.textContent = "Each shake inside this rarity is equally likely.";
@@ -4171,15 +4003,17 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     else clearKonkonDreamsEffect();
 
     if(profile){
+      var shouldAddHistory = true;
       if(central){
         var centralPullCount = Number(central.total_pulls || 0);
-        if(centralPullCount <= Number(profile.totalPulls || 0)){
-          profile.history = [];
-        }
+        shouldAddHistory = centralPullCount > Number(profile.totalPulls || 0);
         profile.clientId = central.konling_id || profile.clientId;
         profile.totalPulls = centralPullCount;
         profile.pity = Number(central.pity || 0);
         profile.syrupDrops = Number(central.syrup_drops || 0);
+        profile.milkshakesAvailable = Number(central.milkshakes_available || 0);
+        profile.totalUsed = Number(central.total_used || 0);
+        profile.totalAssigned = Number(central.total_assigned || 0);
       }else{
         profile.totalPulls += 1;
         if(tier.stars >= 3) profile.pity = 0;
@@ -4187,17 +4021,19 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
         if(duplicate) profile.syrupDrops = (profile.syrupDrops || 0) + syrupEarned;
       }
 
-      profile.history.unshift({
-        stars:tier.stars,
-        name:shake[0],
-        tier:tier.label,
-        reward:shake[2] || "Reward details unavailable",
-        duplicate:duplicate,
-        syrupEarned:syrupEarned,
-        guaranteed:central ? !!central.guaranteed : currentPullGuaranteed,
-        at:new Date().toISOString()
-      });
-      if(profile.history.length > 100) profile.history.pop();
+      if(shouldAddHistory){
+        profile.history.unshift({
+          stars:tier.stars,
+          name:shake[0],
+          tier:tier.label,
+          reward:shake[2] || "Reward details unavailable",
+          duplicate:duplicate,
+          syrupEarned:syrupEarned,
+          guaranteed:central ? !!central.guaranteed : currentPullGuaranteed,
+          at:new Date().toISOString()
+        });
+        if(profile.history.length > 100) profile.history.pop();
+      }
       saveCustomers();
 
       syrupNote.textContent = duplicate
@@ -4212,41 +4048,41 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
   }
 
   function resetPull(){
-    var revealBack = document.getElementById("revealBack");
+    var revealBack=document.getElementById("revealBack");
     revealBack.classList.remove("show","konkon-dreams");
     document.getElementById("revealCard").classList.remove("konkon");
     clearKonkonDreamsEffect();
-    pendingCentralPull = null;
-    currentPullGuaranteed = false;
-    phase = "rarity";
-    selectedTier = null;
-    currentRotation = -Math.PI/2;
+    pendingCentralPull=null;
+    currentPullGuaranteed=false;
+    phase="rarity";
+    selectedTier=null;
+    currentRotation=-Math.PI/2;
 
-    var profile = ensureProfileShape(getActiveProfile());
-    var guaranteeReady = !!(profile && profile.pity >= GUARANTEE_AFTER_MISSES);
+    var profile=ensureProfileShape(getActiveProfile());
+    var guaranteeReady=!!(profile&&profile.pity>=GUARANTEE_AFTER_MISSES);
+    var available=profile?Math.max(0,Number(profile.milkshakesAvailable||0)):0;
 
     if(guaranteeReady){
-      kicker.textContent = "Guaranteed spin · ★★★+";
-      stageTitle.textContent = "Your ★★★+ guarantee is ready!";
-      stageText.textContent = "This rarity wheel now contains only ★★★, ★★★★ and ★★★★★.";
-      spinBtn.textContent = "SPIN GUARANTEED RARITY";
-      centerCap.innerHTML = "★★★+<span>GUARANTEED</span>";
-      subcontrol.textContent = "Guaranteed pool: ★★★ 60% · ★★★★ 30% · ★★★★★ 10%.";
+      kicker.textContent="Guaranteed milkshake · ★★★+";
+      stageTitle.textContent="Your ★★★+ guarantee is ready!";
+      stageText.textContent="This rarity wheel now contains only ★★★, ★★★★ and ★★★★★.";
+      centerCap.innerHTML="★★★+<span>GUARANTEED</span>";
+      subcontrol.textContent="Guaranteed pool: ★★★ 60% · ★★★★ 30% · ★★★★★ 10%.";
     }else{
-      kicker.textContent = "First spin · rarity";
-      stageTitle.textContent = "Fox says... SPIN! kon kon~! ♡";
-      stageText.textContent = "Spin for a rarity first. Your matching shake wheel takes over automatically.";
-      spinBtn.textContent = "SPIN RARITY";
-      centerCap.innerHTML = "WHISK<span>& WHIM</span>";
-      subcontrol.textContent = "Exact permanent rates are shown on the right.";
+      kicker.textContent="First spin · rarity";
+      stageTitle.textContent="Fox says... SPIN! kon kon~! ♡";
+      stageText.textContent="Spin for a rarity first. Your matching shake wheel takes over automatically.";
+      centerCap.innerHTML="WHISK<span>& WHIM</span>";
+      subcontrol.textContent=profile?(available>0?"Exact permanent rates are shown on the right.":"No milkshakes available. Ask Revie to assign more."):"Log in to use your assigned milkshakes.";
     }
 
-    spinBtn.disabled = !profile;
+    spinBtn.textContent="Milkshakes x"+available;
+    spinBtn.disabled=!profile||available<=0;
     resultChip.classList.remove("show");
     drawWheel();
   }
 
-  function formatPct(x){
+    function formatPct(x){
     return Math.abs(x-Math.round(x))<.0001 ? Math.round(x)+"%" : x.toFixed(2)+"%";
   }
 
@@ -4319,11 +4155,11 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
     historyEl.innerHTML = "";
     var profile = ensureProfileShape(getActiveProfile());
     if(!profile){
-      historyEl.innerHTML = '<div class="history-empty">Select a Konling to see their saved pull history.</div>';
+      historyEl.innerHTML = '<div class="history-empty">Log in to see your milkshake history.</div>';
       return;
     }
     if(!profile.history.length){
-      historyEl.innerHTML = '<div class="history-empty">No pulls saved for this Konling yet.</div>';
+      historyEl.innerHTML = '<div class="history-empty">No milkshakes used yet.</div>';
       return;
     }
     profile.history.slice(0,100).forEach(function(h){
@@ -4338,54 +4174,12 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
   }
 
   spinBtn.addEventListener("click",spin);
-  canvas.addEventListener("click",function(){ if(!spinning) spin(); });
+  canvas.addEventListener("click",function(){if(!spinning)spin();});
   document.getElementById("nextPull").addEventListener("click",resetPull);
-
-  newCustomerBtn.addEventListener("click",function(){ openCustomerEditor("new"); });
-  editCustomerBtn.addEventListener("click",function(){ if(getActiveProfile()) openCustomerEditor("edit"); });
-  deleteCustomerBtn.addEventListener("click",deleteActiveCustomer);
-  saveCustomerBtn.addEventListener("click",saveCustomerEditor);
-  cancelCustomerBtn.addEventListener("click",closeCustomerEditor);
-  customerName.addEventListener("keydown",function(e){
-    if(e.key === "Enter") saveCustomerEditor();
-    if(e.key === "Escape") closeCustomerEditor();
-  });
-  customerSelect.addEventListener("change",function(){
-    konlingScrollMenu.classList.remove("show");
-    selectCustomer(customerSelect.value);
-  });
-  browseKonlingsBtn.addEventListener("click",function(e){
-    e.stopPropagation();
-    konlingScrollMenu.classList.toggle("show");
-  });
-  document.addEventListener("click",function(e){
-    if(!e.target.closest(".customer-select-wrap")){
-      konlingScrollMenu.classList.remove("show");
-    }
-  });
-  restartGuarantee.addEventListener("click",async function(){
-    if(spinning) return;
-    var profile = ensureProfileShape(getActiveProfile());
-    if(!profile) return;
-
-    restartGuarantee.disabled = true;
-    if(centralClient && /^K\d+$/.test(profile.clientId || "")){
-      var res = await centralClient.rpc("reset_gacha_pity",{
-        p_username:profile.name,
-        p_konling_id:profile.clientId
-      });
-      if(res.error){
-        subcontrol.textContent = "Could not restart this Konling's guarantee. Nothing was changed.";
-        restartGuarantee.disabled = false;
-        return;
-      }
-    }
-
-    profile.pity = 0;
-    saveCustomers();
-    resetPull();
-    renderCustomerState();
-  });
+  customerLoginBtn.addEventListener("click",loginCustomer);
+  customerLogoutBtn.addEventListener("click",logoutCustomer);
+  customerLoginUsername.addEventListener("keydown",function(e){if(e.key==="Enter")customerLoginPassword.focus();});
+  customerLoginPassword.addEventListener("keydown",function(e){if(e.key==="Enter")loginCustomer();});
 
   var detailsModal = document.getElementById("detailsModal");
   document.getElementById("detailsBtn").addEventListener("click",function(){ detailsModal.classList.add("show"); });
@@ -4406,6 +4200,7 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
       document.getElementById("revealBack").classList.remove("show");
     }
     if((e.key==="Enter" || e.key===" ") && !spinning && !detailsModal.classList.contains("show") && !document.getElementById("revealBack").classList.contains("show")){
+      if(e.target && (e.target.tagName==="INPUT" || e.target.tagName==="BUTTON")) return;
       e.preventDefault();
       spin();
     }
@@ -4413,12 +4208,9 @@ UdA7UOdP0/nA1H0/i3rugPzaC47aEFG4/cBJRQUhUZklF21wAAAA
 
   renderRates();
   renderDetails();
-  renderCustomerOptions();
-  if(activeCustomerKey && !customers[activeCustomerKey]) activeCustomerKey = "";
-  renderCustomerOptions();
   renderCustomerState();
-  syncActiveProfileFromCentral();
   drawWheel();
+  if(customerSessionToken) syncActiveProfileFromCentral(false);
 })();
 </script>
 </body>
