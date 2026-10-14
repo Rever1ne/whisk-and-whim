@@ -48,6 +48,28 @@
   border:1px solid rgba(152,75,106,.18);
 }
 
+
+/* Customer login + milkshake allowance controls */
+.register-card{margin-bottom:15px}
+.register-card h2{margin:0 0 4px;font-size:19px}
+.register-card p{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.reg-grid{display:grid;grid-template-columns:1.2fr 1fr 1.2fr auto;gap:9px;align-items:end}
+.reg-field{display:grid;gap:5px}
+.reg-field label,.login-controls label{font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.reg-field input,.login-controls input{width:100%;border:1px solid var(--line);background:#e8f1f7;color:var(--ink);border-radius:11px;padding:10px 11px;outline:none}
+.cred-box{display:none;margin-top:12px;padding:12px 14px;border:1px dashed rgba(144,70,102,.36);border-radius:14px;background:rgba(255,232,241,.72);font-size:12px;line-height:1.55}
+.cred-box.show{display:block}.cred-box b{color:#59273d}.cred-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.account-box{margin:14px 0;padding:14px;border-radius:16px;background:rgba(198,218,234,.62);border:1px solid rgba(70,109,146,.14)}
+.account-box h3{margin:0 0 4px;font-size:15px}.account-box p{margin:0 0 11px;font-size:11px;color:var(--muted);line-height:1.5}
+.account-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.account-stats div{background:rgba(231,241,248,.72);border:1px solid rgba(70,109,146,.11);border-radius:11px;padding:9px}
+.account-stats b,.account-stats span{display:block}.account-stats b{font-size:16px}.account-stats span{font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:2px}
+.login-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.control-row{display:flex;gap:7px;align-items:end}.control-row .reg-field{flex:1}
+.small-note{font-size:10px;color:var(--muted);line-height:1.45;margin-top:8px}
+@media(max-width:900px){.reg-grid{grid-template-columns:1fr 1fr}.account-stats{grid-template-columns:1fr 1fr}}
+@media(max-width:580px){.reg-grid,.login-controls{grid-template-columns:1fr}.control-row{align-items:stretch;flex-direction:column}}
+
 </style>
 </head>
 <body>
@@ -68,13 +90,32 @@
       <div class="brand"><b>Whisk & Whim · Admin Den</b><span>Konling collection control room</span></div>
       <button class="btn ghost" id="logoutBtn">Log out</button>
     </div>
+
+    <div class="card register-card">
+      <h2>Register a Konling login</h2>
+      <p>Create the customer-facing login yourself. Registration creates their Konling ID and links the login to that same profile.</p>
+      <div class="reg-grid">
+        <div class="reg-field"><label>Konling display name</label><input id="regDisplayName" maxlength="80" placeholder="e.g. Mimi"></div>
+        <div class="reg-field"><label>Login username</label><input id="regLoginUsername" maxlength="40" placeholder="e.g. mimi_fox"></div>
+        <div class="reg-field"><label>Password</label><input id="regPassword" type="text" maxlength="128" autocomplete="off" placeholder="Generate a password"></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn ghost" id="generatePasswordBtn" type="button">Generate</button>
+          <button class="btn" id="registerKonlingBtn" type="button">Register</button>
+        </div>
+      </div>
+      <div class="cred-box" id="credentialBox">
+        <div id="credentialText"></div>
+        <div class="cred-actions"><button class="btn ghost" id="copyCredentialsBtn" type="button">Copy login details</button></div>
+        <div class="small-note">Passwords are never stored in readable form. If they forget it, generate a new one from their profile.</div>
+      </div>
+    </div>
     <div class="card">
       <div class="toolbar"><div><h1>Konlings</h1><div class="status" id="adminStatus">Loading central records…</div></div><input class="search" id="search" placeholder="Search Konling…" style="max-width:280px"></div>
       <div class="stats">
         <div class="stat"><b id="sKonlings">0</b><span>Konlings</span></div>
-        <div class="stat"><b id="sPulls">0</b><span>Total pulls</span></div>
-        <div class="stat"><b id="sUnique">0</b><span>Unique shakes pulled</span></div>
-        <div class="stat"><b id="sSyrup">0</b><span>Syrup Drops</span></div>
+        <div class="stat"><b id="sAvailable">0</b><span>Available milkshakes</span></div>
+        <div class="stat"><b id="sAssigned">0</b><span>Total milkshakes assigned</span></div>
+        <div class="stat"><b id="sUsed">0</b><span>Total used</span></div>
       </div>
       <div class="grid">
         <div><div id="konlingList" class="list"></div></div>
@@ -88,50 +129,53 @@
   var cfg=window.WHISK_SUPABASE||null;
   var loginView=document.getElementById("loginView"),dashView=document.getElementById("dashView");
   var loginStatus=document.getElementById("loginStatus"),adminStatus=document.getElementById("adminStatus");
-  var allKonlings=[],allPulls=[],selected=null,client=null;
-  var syncChannel = ("BroadcastChannel" in window) ? new BroadcastChannel("whisk-whim-admin-sync") : null;
+  var allKonlings=[],allPulls=[],allAccounts=[],selected=null,client=null,lastCredential=null;
+  var syncChannel=("BroadcastChannel" in window)?new BroadcastChannel("whisk-whim-admin-sync"):null;
 
-  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]);});}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(ch){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]);});}
   function showLogin(msg){loginView.style.display="block";dashView.classList.remove("show");if(msg)loginStatus.textContent=msg;}
   function showDash(){loginView.style.display="none";dashView.classList.add("show");}
+  function accountFor(k){return allAccounts.find(function(a){return a.konling_uuid===k.id;})||null;}
+  function randomPassword(){
+    var upper="ABCDEFGHJKLMNPQRSTUVWXYZ",lower="abcdefghijkmnopqrstuvwxyz",digits="23456789",symbols="!@#$%";
+    var all=upper+lower+digits+symbols;
+    var bytes=new Uint32Array(14);crypto.getRandomValues(bytes);
+    var chars=[upper[bytes[0]%upper.length],lower[bytes[1]%lower.length],digits[bytes[2]%digits.length],symbols[bytes[3]%symbols.length]];
+    for(var i=4;i<14;i++)chars.push(all[bytes[i]%all.length]);
+    for(var j=chars.length-1;j>0;j--){var n=bytes[j]% (j+1);var t=chars[j];chars[j]=chars[n];chars[n]=t;}
+    return chars.join("");
+  }
+  async function copyText(value){
+    try{await navigator.clipboard.writeText(value);return true;}catch(e){
+      var ta=document.createElement("textarea");ta.value=value;document.body.appendChild(ta);ta.select();
+      var ok=document.execCommand("copy");ta.remove();return ok;
+    }
+  }
+  function showCredential(displayName,konlingId,loginUsername,password){
+    lastCredential={displayName:displayName,konlingId:konlingId,loginUsername:loginUsername,password:password};
+    document.getElementById("credentialText").innerHTML=
+      '<b>Login ready for '+esc(displayName)+'</b><br>'+
+      'Konling ID: '+esc(konlingId)+'<br>'+
+      'Username: '+esc(loginUsername)+'<br>'+
+      'Password: '+esc(password);
+    document.getElementById("credentialBox").classList.add("show");
+  }
 
   async function boot(){
     if(!cfg||!cfg.url||!cfg.anonKey){showLogin("The private database connection has not been finished yet.");return;}
-    client=supabase.createClient(cfg.url,cfg.anonKey,{
-      auth:{
-        persistSession:true,
-        autoRefreshToken:true,
-        detectSessionInUrl:true,
-        storage:window.localStorage
-      }
-    });
+    client=supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}});
     var session=(await client.auth.getSession()).data.session;
     if(!session){showLogin();return;}
     var check=await client.from("admin_users").select("user_id").eq("user_id",session.user.id).maybeSingle();
-    if(check.error){
-      showLogin("Could not verify the admin session right now. Your login is still saved, so refresh and try again.");
-      return;
-    }
-    if(!check.data){
-      await client.auth.signOut();
-      showLogin("This account is not approved for the admin den.");
-      return;
-    }
-    showDash();
-    loadData();
+    if(check.error){showLogin("Could not verify the admin session right now. Your login is still saved, so refresh and try again.");return;}
+    if(!check.data){await client.auth.signOut();showLogin("This account is not approved for the admin den.");return;}
+    showDash();loadData();
   }
 
   document.getElementById("loginBtn").onclick=async function(){
     if(!client){
       if(!cfg||!cfg.url||!cfg.anonKey){loginStatus.textContent="The private database connection has not been finished yet.";return;}
-      client=supabase.createClient(cfg.url,cfg.anonKey,{
-      auth:{
-        persistSession:true,
-        autoRefreshToken:true,
-        detectSessionInUrl:true,
-        storage:window.localStorage
-      }
-    });
+      client=supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}});
     }
     var email=document.getElementById("email").value.trim().toLowerCase();
     if(!email){loginStatus.textContent="Enter your admin email first.";return;}
@@ -157,146 +201,210 @@
   document.getElementById("logoutBtn").onclick=async function(){if(client)await client.auth.signOut();location.reload();};
   document.getElementById("search").oninput=renderList;
 
+  document.getElementById("generatePasswordBtn").onclick=function(){
+    document.getElementById("regPassword").value=randomPassword();
+  };
+
+  document.getElementById("registerKonlingBtn").onclick=async function(){
+    var display=document.getElementById("regDisplayName").value.trim();
+    var login=document.getElementById("regLoginUsername").value.trim();
+    var pass=document.getElementById("regPassword").value;
+    if(!display||!login){adminStatus.textContent="Enter both the Konling name and login username.";return;}
+    if(!pass){pass=randomPassword();document.getElementById("regPassword").value=pass;}
+    adminStatus.textContent="Registering "+display+"…";
+    var res=await client.rpc("admin_register_konling",{p_display_name:display,p_login_username:login,p_password:pass});
+    if(res.error){adminStatus.textContent="Could not register Konling: "+res.error.message;return;}
+    var row=res.data&&res.data[0];
+    if(!row){adminStatus.textContent="Registration did not return a profile.";return;}
+    showCredential(row.username,row.konling_id,row.login_username,pass);
+    document.getElementById("regDisplayName").value="";
+    document.getElementById("regLoginUsername").value="";
+    document.getElementById("regPassword").value="";
+    adminStatus.textContent=row.username+" is registered. Copy their login details before leaving this page.";
+    await loadData(true);
+    var made=allKonlings.find(function(k){return k.konling_id===row.konling_id;});
+    if(made){selected=made.id;renderList();renderProfile();}
+  };
+
+  document.getElementById("copyCredentialsBtn").onclick=async function(){
+    if(!lastCredential)return;
+    var txt="Whisk & Whim login\nKonling ID: "+lastCredential.konlingId+"\nUsername: "+lastCredential.loginUsername+"\nPassword: "+lastCredential.password;
+    var ok=await copyText(txt);
+    adminStatus.textContent=ok?"Login details copied.":"Could not copy automatically. Select the details above manually.";
+  };
+
   async function loadData(silent){
     if(!client)return;
     if(!silent)adminStatus.textContent="Loading central records…";
-    var kr=await client.from("konlings").select("*").order("created_at",{ascending:false});
-    var pr=await client.from("pulls").select("*").order("created_at",{ascending:false}).limit(5000);
-    if(kr.error||pr.error){adminStatus.textContent=(kr.error||pr.error).message;return;}
-    allKonlings=kr.data||[];allPulls=pr.data||[];
+    var results=await Promise.all([
+      client.from("konlings").select("*").order("created_at",{ascending:false}),
+      client.from("pulls").select("*").order("created_at",{ascending:false}).limit(5000),
+      client.rpc("admin_list_konling_accounts")
+    ]);
+    var kr=results[0],pr=results[1],ar=results[2];
+    if(kr.error||pr.error||ar.error){adminStatus.textContent=(kr.error||pr.error||ar.error).message;return;}
+    allKonlings=kr.data||[];allPulls=pr.data||[];allAccounts=ar.data||[];
 
-    if(selected && !allKonlings.some(function(k){return k.id===selected;})){
+    if(selected&&!allKonlings.some(function(k){return k.id===selected;})){
       selected=null;
       var profileBox=document.getElementById("profile");
       profileBox.className="empty";
-      profileBox.textContent="That Konling was deleted from the wheel. Their central pull history was deleted too.";
+      profileBox.textContent="That Konling was permanently deleted. Their login, sessions, allowance and pull history are gone too.";
     }
 
     document.getElementById("sKonlings").textContent=allKonlings.length;
-    document.getElementById("sPulls").textContent=allPulls.length;
-    document.getElementById("sUnique").textContent=new Set(allPulls.map(function(p){return p.shake_name;})).size;
-    document.getElementById("sSyrup").textContent=allKonlings.reduce(function(n,k){return n+(k.syrup_drops||0);},0);
-    if(!silent)adminStatus.textContent="Central pull records are up to date.";
-    renderList();
-    if(selected)renderProfile();
+    document.getElementById("sAvailable").textContent=allAccounts.reduce(function(n,a){return n+Number(a.milkshakes_available||0);},0);
+    document.getElementById("sAssigned").textContent=allAccounts.reduce(function(n,a){return n+Number(a.total_assigned||0);},0);
+    document.getElementById("sUsed").textContent=allAccounts.reduce(function(n,a){return n+Number(a.total_used||0);},0);
+    if(!silent)adminStatus.textContent="Central records and milkshake allowances are up to date.";
+    renderList();if(selected)renderProfile();
   }
 
   function renderList(){
     var q=document.getElementById("search").value.trim().toLowerCase();
-    var rows=allKonlings.filter(function(k){return !q||k.username.toLowerCase().includes(q)||(k.konling_id||"").toLowerCase().includes(q);});
+    var rows=allKonlings.filter(function(k){
+      var a=accountFor(k);
+      return !q||k.username.toLowerCase().includes(q)||(k.konling_id||"").toLowerCase().includes(q)||(a&&a.login_username&&a.login_username.toLowerCase().includes(q));
+    });
     var box=document.getElementById("konlingList");
     if(!rows.length){box.innerHTML='<div class="empty">No Konlings found.</div>';return;}
-    box.innerHTML=rows.map(function(k){return '<button class="konling '+(selected===k.id?'active':'')+'" data-id="'+k.id+'"><b>'+esc(k.username)+'</b><span>'+esc(k.konling_id)+' · '+k.total_pulls+' pulls · pity '+k.pity+'/4</span></button>';}).join("");
+    box.innerHTML=rows.map(function(k){
+      var a=accountFor(k);
+      var meta=esc(k.konling_id)+" · "+(a&&a.has_login?esc(a.login_username)+" · "+a.milkshakes_available+" available":"no login yet");
+      return '<button class="konling '+(selected===k.id?'active':'')+'" data-id="'+k.id+'"><b>'+esc(k.username)+'</b><span>'+meta+'</span></button>';
+    }).join("");
     box.querySelectorAll(".konling").forEach(function(btn){btn.onclick=function(){selected=btn.dataset.id;renderList();renderProfile();};});
   }
 
   function renderProfile(){
     var k=allKonlings.find(function(x){return x.id===selected;});
     if(!k)return;
+    var a=accountFor(k);
     var pulls=allPulls.filter(function(p){return p.konling_uuid===k.id;});
     var unique=new Set(pulls.map(function(p){return p.shake_name;})).size;
-    var box=document.getElementById("profile");
-    box.className="";
-    box.innerHTML='<div class="profile-head"><div><h2>'+esc(k.username)+'</h2><small>'+esc(k.konling_id)+'</small></div><div style="display:grid;gap:8px;justify-items:end"><small>Joined '+new Date(k.created_at).toLocaleDateString()+'</small><div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end"><button class="btn danger" id="clearHistoryBtn" '+(pulls.length?'':'disabled')+'>Clear pull history</button><button class="btn danger" id="deleteKonlingBtn">Delete Konling permanently</button></div></div></div>'+
-      '<div class="mini"><div><b>'+k.total_pulls+'</b><span>Pulls</span></div><div><b>'+unique+' / 15</b><span>Collection</span></div><div><b>'+k.pity+' / 4</b><span>Pity</span></div><div><b>'+k.syrup_drops+'</b><span>Syrup</span></div></div>'+
-      '<div class="pulls">'+(pulls.length?pulls.map(function(p){return '<div class="pull"><b>'+"★".repeat(p.stars)+'</b><div><strong>'+esc(p.shake_name)+'</strong><br><small>'+esc(p.rarity)+' · '+new Date(p.created_at).toLocaleString()+'</small></div><span class="pill">'+(p.guaranteed?'GUARANTEED · ':'')+(p.duplicate?'DUPLICATE +'+p.syrup_earned:'NEW')+'</span></div>';}).join(""):'<div class="empty">No pulls yet.</div>')+'</div>';
+    var box=document.getElementById("profile");box.className="";
 
-    var clearBtn=document.getElementById("clearHistoryBtn");
-    if(clearBtn) clearBtn.onclick=clearSelectedHistory;
-    var deleteBtn=document.getElementById("deleteKonlingBtn");
-    if(deleteBtn) deleteBtn.onclick=deleteSelectedKonling;
+    var accountHtml;
+    if(a&&a.has_login){
+      accountHtml=
+        '<div class="account-box"><h3>Customer login</h3><p>Username <b>'+esc(a.login_username)+'</b>. The password cannot be viewed again, only reset.</p>'+
+        '<div class="account-stats">'+
+          '<div><b>'+a.milkshakes_available+'</b><span>Available</span></div>'+
+          '<div><b>'+a.total_assigned+'</b><span>Total milkshakes assigned</span></div>'+
+          '<div><b>'+a.total_used+'</b><span>Total used</span></div>'+
+          '<div><b>'+(a.last_login_at?new Date(a.last_login_at).toLocaleDateString():"Never")+'</b><span>Last login</span></div>'+
+        '</div>'+
+        '<div class="login-controls">'+
+          '<div class="control-row"><div class="reg-field"><label>Add milkshakes</label><input id="addMilkAmount" type="number" min="1" value="1"></div><button class="btn" id="addMilkBtn">Add</button></div>'+
+          '<div class="control-row"><div class="reg-field"><label>Set available exactly</label><input id="setMilkAmount" type="number" min="0" value="'+a.milkshakes_available+'"></div><button class="btn ghost" id="setMilkBtn">Set</button></div>'+
+          '<div class="control-row"><div class="reg-field"><label>Login username</label><input id="editLoginUsername" maxlength="40" value="'+esc(a.login_username)+'"></div><button class="btn ghost" id="saveLoginUsernameBtn">Save</button></div>'+
+          '<div class="control-row"><div class="reg-field"><label>New password</label><input id="resetPasswordValue" type="text" maxlength="128" placeholder="Generate a new password"></div><button class="btn ghost" id="genResetPasswordBtn">Generate</button><button class="btn" id="resetPasswordBtn">Reset</button></div>'+
+        '</div><div class="small-note">Setting the available amount is useful for correcting an assignment mistake. Resetting a password signs the customer out everywhere.</div></div>';
+    }else{
+      accountHtml=
+        '<div class="account-box"><h3>Customer login not enabled</h3><p>This is an older Konling profile. You can attach login details without creating a second profile.</p>'+
+        '<div class="login-controls">'+
+          '<div class="reg-field"><label>Login username</label><input id="enableLoginUsername" maxlength="40" placeholder="Separate customer login username"></div>'+
+          '<div class="control-row"><div class="reg-field"><label>Password</label><input id="enablePasswordValue" type="text" maxlength="128" placeholder="Generate a password"></div><button class="btn ghost" id="genEnablePasswordBtn">Generate</button></div>'+
+        '</div><div style="margin-top:9px"><button class="btn" id="enableLoginBtn">Create login for this Konling</button></div></div>';
+    }
+
+    box.innerHTML=
+      '<div class="profile-head"><div><h2>'+esc(k.username)+'</h2><small>'+esc(k.konling_id)+'</small></div>'+
+      '<div style="display:grid;gap:8px;justify-items:end"><small>Joined '+new Date(k.created_at).toLocaleDateString()+'</small>'+
+      '<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end"><button class="btn danger" id="clearHistoryBtn" '+(pulls.length?'':'disabled')+'>Clear milkshake history</button><button class="btn danger" id="deleteKonlingBtn">Delete Konling permanently</button></div></div></div>'+
+      '<div class="mini"><div><b>'+k.total_pulls+'</b><span>Milkshakes pulled</span></div><div><b>'+unique+' / 15</b><span>Collection</span></div><div><b>'+k.pity+' / 4</b><span>Pity</span></div><div><b>'+k.syrup_drops+'</b><span>Syrup</span></div></div>'+
+      accountHtml+
+      '<div class="pulls">'+(pulls.length?pulls.map(function(p){return '<div class="pull"><b>'+"★".repeat(p.stars)+'</b><div><strong>'+esc(p.shake_name)+'</strong><br><small>'+esc(p.rarity)+' · '+new Date(p.created_at).toLocaleString()+'</small></div><span class="pill">'+(p.guaranteed?'GUARANTEED · ':'')+(p.duplicate?'DUPLICATE +'+p.syrup_earned:'NEW')+'</span></div>';}).join(""):'<div class="empty">No milkshakes used yet.</div>')+'</div>';
+
+    document.getElementById("clearHistoryBtn").onclick=clearSelectedHistory;
+    document.getElementById("deleteKonlingBtn").onclick=deleteSelectedKonling;
+
+    if(a&&a.has_login){
+      document.getElementById("addMilkBtn").onclick=async function(){
+        var n=Number(document.getElementById("addMilkAmount").value);
+        if(!Number.isInteger(n)||n<1){adminStatus.textContent="Enter a whole number of milkshakes to add.";return;}
+        var res=await client.rpc("admin_add_milkshakes",{p_konling_id:k.konling_id,p_amount:n});
+        if(res.error){adminStatus.textContent=res.error.message;return;}
+        adminStatus.textContent=n+" milkshake"+(n===1?"":"s")+" added to "+k.username+".";
+        await loadData(true);renderProfile();
+      };
+      document.getElementById("setMilkBtn").onclick=async function(){
+        var n=Number(document.getElementById("setMilkAmount").value);
+        if(!Number.isInteger(n)||n<0){adminStatus.textContent="Available milkshakes must be 0 or more.";return;}
+        var res=await client.rpc("admin_set_milkshake_balance",{p_konling_id:k.konling_id,p_available:n});
+        if(res.error){adminStatus.textContent=res.error.message;return;}
+        adminStatus.textContent=k.username+" now has "+n+" available milkshake"+(n===1?"":"s")+".";
+        await loadData(true);renderProfile();
+      };
+      document.getElementById("saveLoginUsernameBtn").onclick=async function(){
+        var value=document.getElementById("editLoginUsername").value.trim();
+        var res=await client.rpc("admin_change_konling_login_username",{p_konling_id:k.konling_id,p_login_username:value});
+        if(res.error){adminStatus.textContent=res.error.message;return;}
+        adminStatus.textContent="Login username updated.";
+        await loadData(true);renderProfile();
+      };
+      document.getElementById("genResetPasswordBtn").onclick=function(){document.getElementById("resetPasswordValue").value=randomPassword();};
+      document.getElementById("resetPasswordBtn").onclick=async function(){
+        var value=document.getElementById("resetPasswordValue").value;
+        if(!value){value=randomPassword();document.getElementById("resetPasswordValue").value=value;}
+        var res=await client.rpc("admin_reset_konling_password",{p_konling_id:k.konling_id,p_new_password:value});
+        if(res.error){adminStatus.textContent=res.error.message;return;}
+        showCredential(k.username,k.konling_id,a.login_username,value);
+        adminStatus.textContent="Password reset. Their old sessions were signed out. Copy the new login details.";
+        document.getElementById("resetPasswordValue").value="";
+      };
+    }else{
+      document.getElementById("genEnablePasswordBtn").onclick=function(){document.getElementById("enablePasswordValue").value=randomPassword();};
+      document.getElementById("enableLoginBtn").onclick=async function(){
+        var login=document.getElementById("enableLoginUsername").value.trim();
+        var pass=document.getElementById("enablePasswordValue").value;
+        if(!login){adminStatus.textContent="Enter a login username first.";return;}
+        if(!pass){pass=randomPassword();document.getElementById("enablePasswordValue").value=pass;}
+        var res=await client.rpc("admin_enable_konling_login",{p_konling_id:k.konling_id,p_login_username:login,p_password:pass});
+        if(res.error){adminStatus.textContent=res.error.message;return;}
+        showCredential(k.username,k.konling_id,login,pass);
+        adminStatus.textContent="Login enabled for "+k.username+". Copy the details before leaving the page.";
+        await loadData(true);renderProfile();
+      };
+    }
   }
 
   async function deleteSelectedKonling(){
     var k=allKonlings.find(function(x){return x.id===selected;});
     if(!k||!client)return;
-
-    var ok=confirm(
-      "Permanently delete "+k.username+" ("+k.konling_id+")? This erases their Konling ID, profile, every pull, collection, pity and Syrup Drops. This cannot be undone."
-    );
+    var ok=confirm("Permanently delete "+k.username+" ("+k.konling_id+")? This deletes their Konling ID, customer login, active sessions, assigned milkshakes, pull history, collection, pity and Syrup Drops everywhere. This cannot be undone.");
     if(!ok)return;
-
-    var btn=document.getElementById("deleteKonlingBtn");
-    if(btn){btn.disabled=true;btn.textContent="Deleting…";}
-    adminStatus.textContent="Permanently deleting "+k.username+" and all central records…";
-
-    var res=await client.rpc("delete_konling_profile",{
-      p_konling_id:k.konling_id,
-      p_username:k.username
-    });
-
-    if(res.error||res.data!==true){
-      adminStatus.textContent="Could not permanently delete this Konling: "+(res.error?res.error.message:"Unknown error");
-      if(btn){btn.disabled=false;btn.textContent="Delete Konling permanently";}
-      return;
-    }
-
-    var deletedId=k.konling_id;
-    selected=null;
-
-    if(syncChannel){
-      try{syncChannel.postMessage({type:"konling-deleted",konlingId:deletedId});}catch(e){}
-    }
-    try{
-      localStorage.setItem("whiskWhimAdminSync",JSON.stringify({
-        type:"konling-deleted",
-        konlingId:deletedId,
-        at:Date.now()
-      }));
-    }catch(e){}
-
+    var btn=document.getElementById("deleteKonlingBtn");if(btn){btn.disabled=true;btn.textContent="Deleting…";}
+    adminStatus.textContent="Permanently deleting "+k.username+"…";
+    var res=await client.rpc("delete_konling_profile",{p_konling_id:k.konling_id,p_username:k.username});
+    if(res.error||res.data!==true){adminStatus.textContent="Could not permanently delete this Konling: "+(res.error?res.error.message:"Unknown error");if(btn){btn.disabled=false;btn.textContent="Delete Konling permanently";}return;}
+    var deletedId=k.konling_id;selected=null;
+    if(syncChannel){try{syncChannel.postMessage({type:"konling-deleted",konlingId:deletedId});}catch(e){}}
+    try{localStorage.setItem("whiskWhimAdminSync",JSON.stringify({type:"konling-deleted",konlingId:deletedId,at:Date.now()}));}catch(e){}
     await loadData(true);
-    var profileBox=document.getElementById("profile");
-    profileBox.className="empty";
-    profileBox.textContent="Konling "+deletedId+" was permanently deleted. Their profile and every pull record are gone.";
+    var profileBox=document.getElementById("profile");profileBox.className="empty";
+    profileBox.textContent="Konling "+deletedId+" was permanently deleted everywhere.";
     adminStatus.textContent=k.username+" ("+deletedId+") was permanently deleted.";
   }
 
   async function clearSelectedHistory(){
     var k=allKonlings.find(function(x){return x.id===selected;});
     if(!k||!client)return;
-    var ok=confirm("Delete all pull history for "+k.username+"? This will also reset their collection, pity, pull count and Syrup Drops to 0. Their Konling ID will be kept.");
+    var ok=confirm("Delete all milkshake history for "+k.username+"? This resets their collection, pity, pull count and Syrup Drops to 0. Their Konling ID, login and milkshake allowance stay.");
     if(!ok)return;
-
-    var btn=document.getElementById("clearHistoryBtn");
-    if(btn){btn.disabled=true;btn.textContent="Clearing…";}
-    adminStatus.textContent="Clearing "+k.username+"'s pull history…";
-
+    var btn=document.getElementById("clearHistoryBtn");if(btn){btn.disabled=true;btn.textContent="Clearing…";}
+    adminStatus.textContent="Clearing "+k.username+"'s milkshake history…";
     var res=await client.rpc("clear_konling_history",{p_konling_uuid:k.id});
-    if(res.error){
-      adminStatus.textContent="Could not clear history: "+res.error.message;
-      if(btn){btn.disabled=false;btn.textContent="Clear pull history";}
-      return;
-    }
-
-    await loadData();
-    renderProfile();
-    adminStatus.textContent=k.username+"'s pull history was cleared. Their Konling ID was kept.";
+    if(res.error){adminStatus.textContent="Could not clear history: "+res.error.message;if(btn){btn.disabled=false;btn.textContent="Clear milkshake history";}return;}
+    await loadData();renderProfile();adminStatus.textContent=k.username+"'s milkshake history was cleared. Their login and allowance were kept.";
   }
 
-  if(syncChannel){
-    syncChannel.onmessage=function(e){
-      if(e.data && e.data.type==="konling-deleted"){
-        var removed=allKonlings.find(function(k){return k.konling_id===e.data.konlingId;});
-        if(removed && selected===removed.id)selected=null;
-        loadData();
-      }
-    };
-  }
-
-  window.addEventListener("storage",function(e){
-    if(e.key==="whiskWhimAdminSync" && dashView.classList.contains("show"))loadData();
-  });
-  window.addEventListener("focus",function(){
-    if(dashView.classList.contains("show"))loadData(true);
-  });
-  document.addEventListener("visibilitychange",function(){
-    if(!document.hidden && dashView.classList.contains("show"))loadData(true);
-  });
-  setInterval(function(){
-    if(dashView.classList.contains("show"))loadData(true);
-  },30000);
-
+  if(syncChannel){syncChannel.onmessage=function(e){if(e.data&&e.data.type==="konling-deleted"){var removed=allKonlings.find(function(k){return k.konling_id===e.data.konlingId;});if(removed&&selected===removed.id)selected=null;loadData();}};}
+  window.addEventListener("storage",function(e){if(e.key==="whiskWhimAdminSync"&&dashView.classList.contains("show"))loadData();});
+  window.addEventListener("focus",function(){if(dashView.classList.contains("show"))loadData(true);});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden&&dashView.classList.contains("show"))loadData(true);});
+  setInterval(function(){if(dashView.classList.contains("show"))loadData(true);},30000);
   boot();
 })();
 </script>
