@@ -130,11 +130,28 @@
   var loginView=document.getElementById("loginView"),dashView=document.getElementById("dashView");
   var loginStatus=document.getElementById("loginStatus"),adminStatus=document.getElementById("adminStatus");
   var allKonlings=[],allPulls=[],allAccounts=[],selected=null,client=null,lastCredential=null;
+  var ADMIN_EMAIL="yuerinkyubi@gmail.com";
+  var ADMIN_SESSION_KEY="whiskWhimAdminSessionStartedV1";
+  var ADMIN_SESSION_MS=60*60*1000;
+  var adminLogoutTimer=null;
   var syncChannel=("BroadcastChannel" in window)?new BroadcastChannel("whisk-whim-admin-sync"):null;
 
   function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(ch){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]);});}
   function showLogin(msg){loginView.style.display="block";dashView.classList.remove("show");if(msg)loginStatus.textContent=msg;}
   function showDash(){loginView.style.display="none";dashView.classList.add("show");}
+  async function expireAdminSession(message){
+    try{localStorage.removeItem(ADMIN_SESSION_KEY);}catch(e){}
+    if(adminLogoutTimer){clearTimeout(adminLogoutTimer);adminLogoutTimer=null;}
+    if(client)try{await client.auth.signOut();}catch(e){}
+    showLogin(message||"Your one-hour Admin Den session expired. Log in again.");
+  }
+  function armAdminSession(startedAt){
+    if(adminLogoutTimer)clearTimeout(adminLogoutTimer);
+    var remaining=ADMIN_SESSION_MS-(Date.now()-startedAt);
+    if(remaining<=0){expireAdminSession();return false;}
+    adminLogoutTimer=setTimeout(function(){expireAdminSession();},remaining);
+    return true;
+  }
   function accountFor(k){return allAccounts.find(function(a){return a.konling_uuid===k.id;})||null;}
   function broadcastKonlingUpdate(konlingId){
     var msg={type:"konling-updated",konlingId:konlingId,at:Date.now()};
@@ -171,6 +188,14 @@
     client=supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}});
     var session=(await client.auth.getSession()).data.session;
     if(!session){showLogin();return;}
+    if(!session.user||String(session.user.email||"").toLowerCase()!==ADMIN_EMAIL){
+      await client.auth.signOut();
+      showLogin("This account is not approved for the Admin Den.");
+      return;
+    }
+    var startedAt=Number(localStorage.getItem(ADMIN_SESSION_KEY)||0);
+    if(!startedAt){startedAt=Date.now();localStorage.setItem(ADMIN_SESSION_KEY,String(startedAt));}
+    if(!armAdminSession(startedAt))return;
     var check=await client.from("admin_users").select("user_id").eq("user_id",session.user.id).maybeSingle();
     if(check.error){showLogin("Could not verify the admin session right now. Your login is still saved, so refresh and try again.");return;}
     if(!check.data){await client.auth.signOut();showLogin("This account is not approved for the admin den.");return;}
@@ -184,6 +209,7 @@
     }
     var email=document.getElementById("email").value.trim().toLowerCase();
     if(!email){loginStatus.textContent="Enter your admin email first.";return;}
+    if(email!==ADMIN_EMAIL){loginStatus.textContent="This email is not approved for the Admin Den.";return;}
     loginStatus.textContent="Sending your one-time code…";
     var res=await client.auth.signInWithOtp({email:email,options:{shouldCreateUser:false,emailRedirectTo:location.href}});
     if(res.error){loginStatus.textContent=res.error.message;return;}
@@ -195,15 +221,17 @@
 
   document.getElementById("verifyBtn").onclick=async function(){
     var email=document.getElementById("email").value.trim().toLowerCase();
+    if(email!==ADMIN_EMAIL){loginStatus.textContent="This email is not approved for the Admin Den.";return;}
     var token=document.getElementById("otp").value.trim();
     if(!token){loginStatus.textContent="Enter the one-time code from your email.";return;}
     loginStatus.textContent="Opening the admin den…";
     var res=await client.auth.verifyOtp({email:email,token:token,type:"email"});
     if(res.error){loginStatus.textContent=res.error.message;return;}
+    localStorage.setItem(ADMIN_SESSION_KEY,String(Date.now()));
     location.reload();
   };
 
-  document.getElementById("logoutBtn").onclick=async function(){if(client)await client.auth.signOut();location.reload();};
+  document.getElementById("logoutBtn").onclick=async function(){try{localStorage.removeItem(ADMIN_SESSION_KEY);}catch(e){} if(client)await client.auth.signOut();location.reload();};
   document.getElementById("search").oninput=renderList;
 
   document.getElementById("generatePasswordBtn").onclick=function(){
@@ -259,7 +287,7 @@
 
     document.getElementById("sKonlings").textContent=allKonlings.length;
     document.getElementById("sAvailable").textContent=allAccounts.reduce(function(n,a){return n+Number(a.milkshakes_available||0);},0);
-    document.getElementById("sAssigned").textContent=allAccounts.reduce(function(n,a){return n+Number(a.total_assigned||0);},0);
+    document.getElementById("sAssigned").textContent=allAccounts.reduce(function(n,a){return n+Number(a.milkshakes_available||0);},0);
     document.getElementById("sUsed").textContent=allAccounts.reduce(function(n,a){return n+Number(a.total_used||0);},0);
     if(!silent)adminStatus.textContent="Central records and milkshake allowances are up to date.";
     renderList();if(selected)renderProfile();
@@ -295,7 +323,7 @@
         '<div class="account-box"><h3>Customer login</h3><p>Username <b>'+esc(a.login_username)+'</b>. The password cannot be viewed again, only reset.</p>'+
         '<div class="account-stats">'+
           '<div><b>'+a.milkshakes_available+'</b><span>Available</span></div>'+
-          '<div><b>'+a.total_assigned+'</b><span>Total milkshakes assigned</span></div>'+
+          '<div><b>'+a.milkshakes_available+'</b><span>Total milkshakes assigned</span></div>'+
           '<div><b>'+a.total_used+'</b><span>Total used</span></div>'+
           '<div><b>'+(a.last_login_at?new Date(a.last_login_at).toLocaleDateString():"Never")+'</b><span>Last login</span></div>'+
         '</div>'+
