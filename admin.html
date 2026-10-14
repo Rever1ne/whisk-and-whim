@@ -114,7 +114,6 @@
       <div class="stats">
         <div class="stat"><b id="sKonlings">0</b><span>Konlings</span></div>
         <div class="stat"><b id="sAvailable">0</b><span>Available milkshakes</span></div>
-        <div class="stat"><b id="sAssigned">0</b><span>Total milkshakes assigned</span></div>
         <div class="stat"><b id="sUsed">0</b><span>Total used</span></div>
       </div>
       <div class="grid">
@@ -287,7 +286,6 @@
 
     document.getElementById("sKonlings").textContent=allKonlings.length;
     document.getElementById("sAvailable").textContent=allAccounts.reduce(function(n,a){return n+Number(a.milkshakes_available||0);},0);
-    document.getElementById("sAssigned").textContent=allAccounts.reduce(function(n,a){return n+Number(a.milkshakes_available||0);},0);
     document.getElementById("sUsed").textContent=allAccounts.reduce(function(n,a){return n+Number(a.total_used||0);},0);
     if(!silent)adminStatus.textContent="Central records and milkshake allowances are up to date.";
     renderList();if(selected)renderProfile();
@@ -323,7 +321,7 @@
         '<div class="account-box"><h3>Customer login</h3><p>Username <b>'+esc(a.login_username)+'</b>. The password cannot be viewed again, only reset.</p>'+
         '<div class="account-stats">'+
           '<div><b>'+a.milkshakes_available+'</b><span>Available</span></div>'+
-          '<div><b>'+a.milkshakes_available+'</b><span>Total milkshakes assigned</span></div>'+
+
           '<div><b>'+a.total_used+'</b><span>Total used</span></div>'+
           '<div><b>'+(a.last_login_at?new Date(a.last_login_at).toLocaleDateString():"Never")+'</b><span>Last login</span></div>'+
         '</div>'+
