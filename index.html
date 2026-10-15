@@ -33,18 +33,49 @@ body{
 }
 button,input{font:inherit}
 button{cursor:pointer}
+/* Individual creature ornaments, never tiled or clipped */
+.side-creatures{display:none}
 @media (min-width:1650px){
-  /* Keep one creature illustration on each side, with clear gutters. */
-  body::before,body::after{
-    content:"";position:fixed;top:50%;height:min(470px,70vh);
-    width:clamp(110px,8vw,150px);
-    z-index:0;pointer-events:none;opacity:.96;
-    background-image:url("./creature-side-decor.svg");
-    background-repeat:no-repeat;background-position:center;background-size:contain;
-    filter:drop-shadow(0 7px 10px rgba(74,140,255,.10));
+  .side-creatures{
+    position:fixed;
+    top:7vh;
+    bottom:7vh;
+    width:160px;
+    z-index:0;
+    pointer-events:none;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
   }
-  body::before{left:8px;transform:translateY(-50%)}
-  body::after{right:8px;transform:translateY(-50%) scaleX(-1)}
+  .side-creatures.left{
+    left:max(10px,calc((100vw - 1380px)/2 - 150px));
+  }
+  .side-creatures.right{
+    right:max(10px,calc((100vw - 1380px)/2 - 150px));
+  }
+  .side-creature{
+    display:block;
+    flex:0 1 auto;
+    width:auto;
+    height:min(18vh,125px);
+    max-width:100px;
+    object-fit:contain;
+    overflow:visible;
+    opacity:.96;
+    user-select:none;
+    -webkit-user-drag:none;
+    filter:drop-shadow(0 7px 9px rgba(78,110,121,.14));
+  }
+  .side-creatures.left .c1{margin-left:10px;transform:rotate(-7deg)}
+  .side-creatures.left .c2{margin-left:50px;transform:rotate(9deg) scale(.9)}
+  .side-creatures.left .c3{margin-left:5px;transform:rotate(6deg) scale(.98)}
+  .side-creatures.left .c4{margin-left:48px;transform:rotate(-8deg) scale(.88)}
+  .side-creatures.right .c1{margin-left:49px;transform:scaleX(-1) rotate(8deg) scale(.9)}
+  .side-creatures.right .c2{margin-left:4px;transform:scaleX(-1) rotate(-6deg)}
+  .side-creatures.right .c3{margin-left:52px;transform:scaleX(-1) rotate(-9deg) scale(.88)}
+  .side-creatures.right .c4{margin-left:13px;transform:scaleX(-1) rotate(7deg) scale(.97)}
 }
 .app{position:relative;z-index:1;width:min(1380px,100%);margin:0 auto;padding:28px 22px 56px}
 @media (min-width:1650px){.app{width:min(1380px,calc(100% - 360px))}}
@@ -1921,6 +1952,19 @@ body{
 </head>
 <body>
 
+<!-- Single-creature side ornaments; the original patterned graphic is not used. -->
+<div class="side-creatures left" aria-hidden="true">
+  <img class="side-creature c1" src="./little-creature.svg" alt="">
+  <img class="side-creature c2" src="./little-creature.svg" alt="">
+  <img class="side-creature c3" src="./little-creature.svg" alt="">
+  <img class="side-creature c4" src="./little-creature.svg" alt="">
+</div>
+<div class="side-creatures right" aria-hidden="true">
+  <img class="side-creature c1" src="./little-creature.svg" alt="">
+  <img class="side-creature c2" src="./little-creature.svg" alt="">
+  <img class="side-creature c3" src="./little-creature.svg" alt="">
+  <img class="side-creature c4" src="./little-creature.svg" alt="">
+</div>
 <div class="app">
   <header class="topbar">
     <div class="brand">
